@@ -1,0 +1,459 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     18907,        451]
+NotebookOptionsPosition[     16960,        400]
+NotebookOutlinePosition[     17316,        416]
+CellTagsIndexPosition[     17273,        413]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[TextData[StyleBox["Initialize constants", "Title"]], "Text",
+ CellChangeTimes->{{3.7136904879665737`*^9, 
+  3.7136904910087633`*^9}},ExpressionUUID->"3546ffb9-59d3-49cb-b497-\
+f272f24b9d77"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"Declair", " ", "the", " ", "main", " ", "constants"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+    "modelsPath", " ", "=", " ", 
+     "\"\</Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models\>\""}], 
+    ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"precision", " ", "=", " ", ".00000001"}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+    "libPath", " ", "=", " ", 
+     "\"\</Users/izapreev/Projects/CCLR/soft/mscots2bdd/build/src/liblink\>\"\
+"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"libName", " ", "=", " ", "\"\<./scots2int\>\""}], 
+    ";"}]}]}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.7136905026571302`*^9, 
+  3.7136905275698757`*^9}},ExpressionUUID->"ce05d295-423c-419a-b891-\
+2dcad15e370a"],
+
+Cell[TextData[StyleBox["Test StoreCtrl function", "Title"]], "Text",
+ CellChangeTimes->{
+  3.713688296174629*^9},ExpressionUUID->"9f85a3f6-4d65-45cc-b4bc-\
+10cb965b6a87"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"SetDirectory", "[", "libPath", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"FindLibrary", "[", "libName", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadCtrl", "=", 
+   RowBox[{"LibraryFunctionLoad", "[", 
+    RowBox[{"libName", ",", "\"\<load_controller_bdd\>\"", ",", 
+     RowBox[{"{", "UTF8String", "}"}], ",", "Integer"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"GetGridPoints", " ", "=", " ", 
+    RowBox[{"LibraryFunctionLoad", "[", 
+     RowBox[{"libName", ",", " ", "\"\<get_grid_points\>\"", ",", " ", 
+      RowBox[{"{", "}"}], ",", " ", 
+      RowBox[{"{", 
+       RowBox[{"Real", ",", " ", "1"}], "}"}]}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Test", " ", "that", " ", "the", " ", "created", " ", "symbolic", " ", 
+    "controller", " ", "tree", " ", "stores", " ", "the", " ", "same", " ", 
+    "data", " ", "as", " ", "provided", " ", "by", " ", "the", " ", "text", 
+    " ", "inpout", " ", "based", " ", "on", " ", "which", " ", "the", " ", 
+    "symbolic", " ", "bdd", " ", "controller", " ", "was", " ", "computed"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"testSymbolicCtrl", "[", 
+    RowBox[{
+    "modelsPath_", ",", "tcName_", ",", " ", "ctrlDim_", ",", 
+     "tcPointsFileName_", ",", "tcBDDFileName_", ",", " ", "precision_"}], 
+    "]"}], ":=", " ", "\[IndentingNewLine]", 
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "tcPath", ",", "bddPoints", ",", "bddPointsList", " ", ",", " ", 
+       "bddPointsSorted", ",", " ", "textPointsList", ",", " ", 
+       "textPointsSorted", ",", " ", "isNOK"}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"tcPath", " ", "=", " ", 
+       RowBox[{"FileNameJoin", "[", 
+        RowBox[{"{", 
+         RowBox[{"modelsPath", ",", "tcName"}], "}"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", 
+       RowBox[{"StringJoin", "[", 
+        RowBox[{"\"\<Test-case: \>\"", ",", 
+         RowBox[{"FileNameJoin", "[", 
+          RowBox[{"{", 
+           RowBox[{"tcPath", ",", "tcBDDFileName"}], "}"}], "]"}]}], "]"}], 
+       "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{
+        "Print", "[", "\"\<The controller has that many nodes:\>\"", "]"}], 
+        ";"}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"LoadCtrl", "[", 
+       RowBox[{"FileNameJoin", "[", 
+        RowBox[{"{", 
+         RowBox[{"tcPath", ",", "tcBDDFileName"}], "}"}], "]"}], "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"Print", "[", "\"\<Loading the grid points ...\>\"", "]"}], 
+        ";"}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"bddPoints", " ", "=", " ", 
+       RowBox[{"GetGridPoints", "[", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{
+        "Print", "[", "\"\<Partitioning the grid points array ...\>\"", "]"}],
+         ";"}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"bddPointsList", " ", "=", " ", 
+       RowBox[{"Partition", "[", " ", 
+        RowBox[{"bddPoints", ",", "ctrlDim"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{
+        "Print", "[", "\"\<Sorting the grid points array ...\>\"", "]"}], 
+        ";"}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"bddPointsSorted", "=", 
+       RowBox[{"Sort", "[", "bddPointsList", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "Print", "[", "\"\<Loading the text data points ...\>\"", "]"}], 
+       "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"textPointsList", " ", "=", " ", 
+       RowBox[{"retreiveResults", "[", 
+        RowBox[{"tcPointsFileName", ",", "tcPath"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{
+        "Print", "[", "\"\<Sorting the text data points array ...\>\"", "]"}],
+         ";"}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"textPointsSorted", " ", "=", " ", 
+       RowBox[{"Sort", "[", "textPointsList", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{
+        "Print", "[", "\"\<Chercking on the array lengths to be equal...\>\"",
+          "]"}], ";"}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"isNOK", " ", "=", " ", "False"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Length", "[", "bddPointsSorted", "]"}], " ", "\[Equal]", 
+         " ", 
+         RowBox[{"Length", "[", "textPointsSorted", "]"}]}], ",", 
+        RowBox[{"(*", 
+         RowBox[{
+          RowBox[{"Print", "[", 
+           RowBox[{
+           "\"\<Chercking on the array elements to be equal with precision: \
+\>\"", ",", " ", "precision"}], "]"}], ";"}], "*)"}], 
+        RowBox[{
+         RowBox[{"For", "[", 
+          RowBox[{
+           RowBox[{"i", "=", "1"}], ",", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{"i", "\[LessEqual]", 
+              RowBox[{"Length", "[", "bddPointsSorted", "]"}]}], ")"}], " ", "&&",
+             " ", 
+            RowBox[{"!", "isNOK"}]}], ",", 
+           RowBox[{"i", "++"}], ",", " ", 
+           RowBox[{
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"Round", "[", 
+                RowBox[{
+                 RowBox[{"bddPointsSorted", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}], ",", " ", "precision"}], 
+                "]"}], "\[NotEqual]", " ", 
+               RowBox[{"Round", "[", 
+                RowBox[{
+                 RowBox[{"textPointsSorted", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}], ",", "precision"}], "]"}]}],
+               ",", "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{"Print", "[", 
+                RowBox[{
+                "\"\<Error: Different data points @\>\"", ",", " ", "i", ",", 
+                 " ", "\"\< \>\"", ",", 
+                 RowBox[{"bddPointsSorted", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}], ",", " ", "\"\<<>\>\"", ",",
+                  " ", 
+                 RowBox[{"textPointsSorted", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}]}], "]"}], ";", 
+               RowBox[{"isNOK", " ", "=", " ", "True"}], ";"}]}], 
+             "\[IndentingNewLine]", "]"}], ";"}]}], "\[IndentingNewLine]", 
+          "]"}], ";"}], ",", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"Print", "[", 
+          RowBox[{"\"\<Error: Different size lists \>\"", ",", 
+           RowBox[{"Length", "[", "bddPointsSorted", "]"}], " ", ",", " ", 
+           "\"\< != \>\"", ",", " ", 
+           RowBox[{"Length", "[", "textPointsSorted", "]"}]}], "]"}], ";", 
+         RowBox[{"isNOK", " ", "=", " ", "True"}], ";"}]}], 
+       "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{"isNOK", ",", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"Print", "[", "\"\<FAILED\>\"", "]"}], ";"}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"Print", "[", "\"\<PASSED\>\"", "]"}], ";"}]}], 
+       "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", "isNOK", "]"}]}]}], "\[IndentingNewLine]", 
+    "]"}]}], ";"}]}], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.712411126237515*^9, 3.7124111268825407`*^9}, {
+   3.7124121777561693`*^9, 3.712412210503365*^9}, {3.712467094538907*^9, 
+   3.712467098415023*^9}, {3.7136883275694103`*^9, 3.713688420507473*^9}, {
+   3.713688454658139*^9, 3.713688480660437*^9}, {3.713688513750091*^9, 
+   3.713688565537849*^9}, {3.713688604163933*^9, 3.713688658777047*^9}, {
+   3.713688722569086*^9, 3.713688834407054*^9}, {3.7136888837019*^9, 
+   3.713688917225368*^9}, {3.713688955582116*^9, 3.713688962243266*^9}, {
+   3.7136890869581747`*^9, 3.713689129998344*^9}, 3.7136897034260902`*^9, {
+   3.713689827748094*^9, 3.7136900401506977`*^9}, {3.713690093411528*^9, 
+   3.713690293962772*^9}, 3.7136905231301117`*^9, {3.7136905792264433`*^9, 
+   3.713690594917953*^9}, 3.713690653658868*^9, {3.713691363810041*^9, 
+   3.713691365390439*^9}, {3.7136925521947317`*^9, 3.7136925523241577`*^9}, {
+   3.713692654830551*^9, 3.71369266758578*^9}, {3.713696753600122*^9, 
+   3.7136967645824842`*^9}, 
+   3.71445209566737*^9},ExpressionUUID->"acab502d-b509-40e0-90c7-\
+993df6523b69"],
+
+Cell[TextData[StyleBox["Run test cases", "Title"]], "Text",
+ CellChangeTimes->{{3.7136904510309668`*^9, 
+  3.713690454014361*^9}},ExpressionUUID->"2d26e505-da9b-4fad-982b-\
+a32851812e20"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Run", " ", "the", " ", "test"}], "-", 
+     RowBox[{"cases", " ", "one", " ", "by", " ", "one"}]}], ",", " ", 
+    RowBox[{"these", " ", "are", " ", "examples"}]}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"testSymbolicCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/1\>\"", ",", " ", "3", ",", " ", 
+      "\"\<1/sym/points\>\"", ",", " ", "\"\<1/sym/c_reo\>\"", ",", " ", 
+      "precision"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testSymbolicCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1\>\"", ",", " ", "3", ",", " ", 
+      "\"\<1/sym/points\>\"", ",", " ", "\"\<1/sym/c_reo\>\"", ",", " ", 
+      "precision"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testSymbolicCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2\>\"", ",", " ", "3", ",", " ", 
+      "\"\<1/sym/points\>\"", ",", " ", "\"\<1/sym/c_reo\>\"", ",", " ", 
+      "precision"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testSymbolicCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle\>\"", ",", " ", "4", ",", " ", 
+      "\"\<p1/sym/points\>\"", ",", " ", "\"\<1/sym/c_reo\>\"", ",", " ", 
+      "precision"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testSymbolicCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft\>\"", ",", " ", "4", ",", " ", 
+      "\"\<1/sym/points\>\"", ",", " ", "\"\<1/sym/c_reo\>\"", ",", " ", 
+      "precision"}], "]"}], ";"}], "\[IndentingNewLine]"}]}]], "Input",
+ CellChangeTimes->{{3.712411141065707*^9, 3.7124114431111603`*^9}, {
+   3.712411491207597*^9, 3.712411686457197*^9}, {3.712411867045248*^9, 
+   3.712411934984026*^9}, 3.712412110680766*^9, {3.713686838087604*^9, 
+   3.713686887328871*^9}, {3.713686972743822*^9, 3.71368697468064*^9}, {
+   3.7136870256044483`*^9, 3.713687085171369*^9}, {3.7136871425433283`*^9, 
+   3.713687391360813*^9}, {3.713687455168241*^9, 3.713687527958777*^9}, {
+   3.713687568844809*^9, 3.7136876200090847`*^9}, {3.713687682412136*^9, 
+   3.713687716549157*^9}, {3.7136877557968884`*^9, 3.7136877592068367`*^9}, {
+   3.713687815870543*^9, 3.713687919769414*^9}, {3.71368795438491*^9, 
+   3.713688075508581*^9}, {3.713688425437344*^9, 3.7136884357606163`*^9}, {
+   3.713688531511742*^9, 3.71368853900113*^9}, {3.713688583690736*^9, 
+   3.713688628256523*^9}, 3.713688730728232*^9, 3.7136887743968973`*^9, {
+   3.71368882211229*^9, 3.713688902632594*^9}, {3.713688936252757*^9, 
+   3.713689057740613*^9}, {3.7136891344246807`*^9, 3.713689149908471*^9}, 
+   3.7136896998983603`*^9, {3.713689759859931*^9, 3.713689762854725*^9}, {
+   3.713690307491297*^9, 3.7136904423159513`*^9}, {3.713690472808051*^9, 
+   3.713690474829895*^9}, {3.713690562575556*^9, 3.713690575428403*^9}, {
+   3.713690659995913*^9, 3.7136907006641617`*^9}, {3.713691369698861*^9, 
+   3.713691372863697*^9}, {3.713700967711523*^9, 3.713700969045106*^9}, {
+   3.7144478119702883`*^9, 3.7144478260054407`*^9}, {3.714447879800489*^9, 
+   3.714447895746805*^9}, {3.7144523013893957`*^9, 
+   3.714452411839221*^9}},ExpressionUUID->"eda44188-97ef-4ac6-8a2e-\
+d56ebaaa1801"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/symbolic\"\>"],\
+ "Print",
+ CellChangeTimes->{3.713690644495494*^9, 3.7136913800233*^9, 
+  3.7136925576440783`*^9, 3.713696086638873*^9, 3.713696793972596*^9, 
+  3.7136993823598423`*^9},ExpressionUUID->"c53772d6-c5ef-4448-8f40-\
+9913fdc7aeb6"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{3.713690644495494*^9, 3.7136913800233*^9, 
+  3.7136925576440783`*^9, 3.713696086638873*^9, 3.713696793972596*^9, 
+  3.713699382673058*^9},ExpressionUUID->"eb7db927-b6cc-4db9-9a57-\
+44d887632cdb"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_recurrece/\
+symbolicc_rec1\"\>"], "Print",
+ CellChangeTimes->{3.713690644495494*^9, 3.7136913800233*^9, 
+  3.7136925576440783`*^9, 3.713696086638873*^9, 3.713696793972596*^9, 
+  3.7136993826959543`*^9},ExpressionUUID->"9f04d959-9cdf-4d5d-a365-\
+0234bd99e3d8"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{3.713690644495494*^9, 3.7136913800233*^9, 
+  3.7136925576440783`*^9, 3.713696086638873*^9, 3.713696793972596*^9, 
+  3.713699383003583*^9},ExpressionUUID->"9cc9ae80-e02e-4915-aaec-\
+d52955f2c1c0"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_recurrece/\
+symbolicc_rec2\"\>"], "Print",
+ CellChangeTimes->{3.713690644495494*^9, 3.7136913800233*^9, 
+  3.7136925576440783`*^9, 3.713696086638873*^9, 3.713696793972596*^9, 
+  3.713699383026909*^9},ExpressionUUID->"b925357c-fdb0-4736-a2de-\
+53ee6de5e00d"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{3.713690644495494*^9, 3.7136913800233*^9, 
+  3.7136925576440783`*^9, 3.713696086638873*^9, 3.713696793972596*^9, 
+  3.713699383331723*^9},ExpressionUUID->"3361b0fa-bc4d-49b7-b5d6-\
+92c2605859af"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/symbolic\"\>\
+"], "Print",
+ CellChangeTimes->{3.713690644495494*^9, 3.7136913800233*^9, 
+  3.7136925576440783`*^9, 3.713696086638873*^9, 3.713696793972596*^9, 
+  3.713699383335352*^9},ExpressionUUID->"db43bfdd-2757-4bab-8bf7-\
+5dd5aab85d4a"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{3.713690644495494*^9, 3.7136913800233*^9, 
+  3.7136925576440783`*^9, 3.713696086638873*^9, 3.713696793972596*^9, 
+  3.713699383893965*^9},ExpressionUUID->"39874d99-1c03-4660-92a5-\
+fc5897b605e2"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/symbolic\"\
+\>"], "Print",
+ CellChangeTimes->{3.713690644495494*^9, 3.7136913800233*^9, 
+  3.7136925576440783`*^9, 3.713696086638873*^9, 3.713696793972596*^9, 
+  3.713699383905216*^9},ExpressionUUID->"7e55629b-ec3b-4c9b-aa91-\
+0137ff037955"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{3.713690644495494*^9, 3.7136913800233*^9, 
+  3.7136925576440783`*^9, 3.713696086638873*^9, 3.713696793972596*^9, 
+  3.7136994133710318`*^9},ExpressionUUID->"efaa0e89-5078-4de3-aed6-\
+de990ff3c33a"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{932, 606},
+WindowMargins->{{33, Automatic}, {122, Automatic}},
+FrontEndVersion->"11.1 for Mac OS X x86 (32-bit, 64-bit Kernel) (April 27, \
+2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 195, 3, 66, "Text", "ExpressionUUID" -> \
+"3546ffb9-59d3-49cb-b497-f272f24b9d77"],
+Cell[756, 25, 878, 25, 154, "Input", "ExpressionUUID" -> \
+"ce05d295-423c-419a-b891-2dcad15e370a",
+ InitializationCell->True],
+Cell[1637, 52, 170, 3, 66, "Text", "ExpressionUUID" -> \
+"9f85a3f6-4d65-45cc-b4bc-10cb965b6a87"],
+Cell[1810, 57, 8586, 196, 931, "Input", "ExpressionUUID" -> \
+"acab502d-b509-40e0-90c7-993df6523b69",
+ InitializationCell->True],
+Cell[10399, 255, 187, 3, 66, "Text", "ExpressionUUID" -> \
+"2d26e505-da9b-4fad-982b-a32851812e20"],
+Cell[CellGroupData[{
+Cell[10611, 262, 3274, 62, 159, "Input", "ExpressionUUID" -> \
+"eda44188-97ef-4ac6-8a2e-d56ebaaa1801"],
+Cell[CellGroupData[{
+Cell[13910, 328, 337, 6, 24, "Print", "ExpressionUUID" -> \
+"c53772d6-c5ef-4448-8f40-9913fdc7aeb6"],
+Cell[14250, 336, 255, 4, 24, "Print", "ExpressionUUID" -> \
+"eb7db927-b6cc-4db9-9a57-44d887632cdb"],
+Cell[14508, 342, 353, 6, 24, "Print", "ExpressionUUID" -> \
+"9f04d959-9cdf-4d5d-a365-0234bd99e3d8"],
+Cell[14864, 350, 255, 4, 24, "Print", "ExpressionUUID" -> \
+"9cc9ae80-e02e-4915-aaec-d52955f2c1c0"],
+Cell[15122, 356, 351, 6, 24, "Print", "ExpressionUUID" -> \
+"b925357c-fdb0-4736-a2de-53ee6de5e00d"],
+Cell[15476, 364, 255, 4, 24, "Print", "ExpressionUUID" -> \
+"3361b0fa-bc4d-49b7-b5d6-92c2605859af"],
+Cell[15734, 370, 338, 6, 24, "Print", "ExpressionUUID" -> \
+"db43bfdd-2757-4bab-8bf7-5dd5aab85d4a"],
+Cell[16075, 378, 255, 4, 24, "Print", "ExpressionUUID" -> \
+"39874d99-1c03-4660-92a5-fc5897b605e2"],
+Cell[16333, 384, 339, 6, 24, "Print", "ExpressionUUID" -> \
+"7e55629b-ec3b-4c9b-aa91-0137ff037955"],
+Cell[16675, 392, 257, 4, 24, "Print", "ExpressionUUID" -> \
+"efaa0e89-5078-4de3-aed6-de990ff3c33a"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

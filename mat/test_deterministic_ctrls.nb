@@ -1,0 +1,4369 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[    176846,       4361]
+NotebookOptionsPosition[    140536,       3638]
+NotebookOutlinePosition[    140892,       3654]
+CellTagsIndexPosition[    140849,       3651]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[TextData[StyleBox["Initialize constants", "Title"]], "Text",
+ CellChangeTimes->{{3.7136904879665737`*^9, 
+  3.7136904910087633`*^9}},ExpressionUUID->"3546ffb9-59d3-49cb-b497-\
+f272f24b9d77"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"Declair", " ", "the", " ", "main", " ", "constants"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+    "modelsPath", " ", "=", " ", 
+     "\"\</Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models\>\""}], 
+    ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"precision", " ", "=", " ", ".00000001"}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+    "libPath", " ", "=", " ", 
+     "\"\</Users/izapreev/Projects/CCLR/soft/mscots2bdd/build/src/liblink\>\"\
+"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"libName", " ", "=", " ", "\"\<./scots2int\>\""}], 
+    ";"}]}]}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.7136905026571302`*^9, 
+  3.7136905275698757`*^9}},ExpressionUUID->"c3ade20a-50ee-4be6-badd-\
+5ee3ecb71a4a"],
+
+Cell[TextData[StyleBox["Test Determinized controllers", "Title"]], "Text",
+ CellChangeTimes->{
+  3.713688296174629*^9, {3.71370143221707*^9, 
+   3.71370143853796*^9}},ExpressionUUID->"9f85a3f6-4d65-45cc-b4bc-\
+10cb965b6a87"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"SetDirectory", "[", "libPath", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"FindLibrary", "[", "libName", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadCtrl", "=", 
+   RowBox[{"LibraryFunctionLoad", "[", 
+    RowBox[{"libName", ",", "\"\<load_controller_bdd\>\"", ",", 
+     RowBox[{"{", "UTF8String", "}"}], ",", "Integer"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"GetGridPoints", " ", "=", " ", 
+   RowBox[{"LibraryFunctionLoad", "[", 
+    RowBox[{"libName", ",", " ", "\"\<get_grid_points\>\"", ",", " ", 
+     RowBox[{"{", "}"}], ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"Real", ",", " ", "1"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"GetGridDim", "=", 
+    RowBox[{"LibraryFunctionLoad", "[", 
+     RowBox[{"\"\<./scots2int\>\"", ",", "\"\<get_dim\>\"", ",", 
+      RowBox[{"{", "}"}], ",", "mint"}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Test", " ", "that", " ", "the", " ", "created", " ", "deterministic", " ",
+     "controller", " ", "is", " ", "indeed", " ", "a", " ", "determinization",
+     " ", "of", " ", "the", " ", "original", " ", "one"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"testDetermCtrl", "[", 
+    RowBox[{
+    "modelsPath_", ",", "tcName_", ",", " ", "stateDim_", ",", 
+     "tcOrigFileName_", ",", "tcDetFileName_", ",", " ", "precision_", ",", 
+     " ", "isFDOnly_"}], "]"}], ":=", " ", "\[IndentingNewLine]", 
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "tcPath", ",", " ", "origDim", ",", " ", "detDim", ",", " ", 
+       "origPoints", ",", "detPoints", ",", "origPointsList", ",", 
+       "detPointsList", ",", "origStatesList", " ", ",", "detStatesList", " ",
+        ",", "uniDetStatesList", ",", "isNOK", ",", " ", "i", ",", " ", "j"}],
+       "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"tcPath", " ", "=", " ", 
+       RowBox[{"FileNameJoin", "[", 
+        RowBox[{"{", 
+         RowBox[{"modelsPath", ",", "tcName"}], "}"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", 
+       RowBox[{"StringJoin", "[", 
+        RowBox[{"\"\<Test-case: \>\"", ",", 
+         RowBox[{"FileNameJoin", "[", 
+          RowBox[{"{", 
+           RowBox[{"tcPath", ",", "tcDetFileName"}], "}"}], "]"}]}], "]"}], 
+       "]"}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"Load", " ", "the", " ", "original", " ", 
+        RowBox[{"controller", "'"}], "s", " ", "points"}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"LoadCtrl", "[", 
+       RowBox[{"FileNameJoin", "[", 
+        RowBox[{"{", 
+         RowBox[{"tcPath", ",", "tcOrigFileName"}], "}"}], "]"}], "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"origPoints", " ", "=", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Round", "[", 
+          RowBox[{"#", ",", " ", "precision"}], "]"}], "&"}], "/@", " ", 
+        RowBox[{"GetGridPoints", "[", "]"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"origDim", " ", "=", 
+       RowBox[{"GetGridDim", "[", "]"}]}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"Load", " ", "the", " ", "determinied", " ", 
+        RowBox[{"controller", "'"}], "s", " ", "points"}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"LoadCtrl", "[", 
+       RowBox[{"FileNameJoin", "[", 
+        RowBox[{"{", 
+         RowBox[{"tcPath", ",", "tcDetFileName"}], "}"}], "]"}], "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"detPoints", " ", "=", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Round", "[", 
+          RowBox[{"#", ",", " ", "precision"}], "]"}], "&"}], "/@", " ", 
+        RowBox[{"GetGridPoints", "[", "]"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"detDim", "=", 
+       RowBox[{"GetGridDim", "[", "]"}]}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "Partition", " ", "and", " ", "sort", " ", "the", " ", "lists", " ", 
+        "as", " ", "preparation", " ", "step"}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"origPointsList", " ", "=", " ", 
+       RowBox[{"Sort", "[", 
+        RowBox[{"Partition", "[", " ", 
+         RowBox[{"origPoints", ",", "origDim"}], "]"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"detPointsList", " ", "=", " ", 
+       RowBox[{"Sort", "[", 
+        RowBox[{"Partition", "[", " ", 
+         RowBox[{"detPoints", ",", "detDim"}], "]"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"Define", " ", "the", " ", "result", " ", "variable"}], "*)"}],
+       "\[IndentingNewLine]", 
+      RowBox[{"isNOK", " ", "=", " ", "False"}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "1.", " ", "Check", " ", "that", " ", "the", " ", "determinized", " ", 
+        "controller", " ", "is", " ", "indeed", " ", "determinized"}], "*)"}],
+       "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"!", "isNOK"}], ",", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"detStatesList", " ", "=", " ", 
+          RowBox[{"Sort", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"Drop", "[", 
+              RowBox[{"#", ",", 
+               RowBox[{"stateDim", "-", "detDim"}]}], "]"}], "&"}], " ", "/@",
+             " ", "detPointsList"}], "]"}]}], ";", "\[IndentingNewLine]", 
+         RowBox[{"uniDetStatesList", " ", "=", " ", 
+          RowBox[{"DeleteDuplicates", "[", "detStatesList", "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"Length", "[", "detStatesList", "]"}], " ", "\[NotEqual]",
+             "  ", 
+            RowBox[{"Length", "[", "uniDetStatesList", "]"}]}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{
+            "Print", "[", 
+             "\"\<Error: The controller is not fully determinized!\>\"", 
+             "]"}], ";", "\[IndentingNewLine]", 
+            RowBox[{"isNOK", " ", "=", " ", "True"}], ";"}]}], 
+          "\[IndentingNewLine]", "]"}], ";"}]}], "\[IndentingNewLine]", "]"}],
+       ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"!", "isFDOnly"}], ",", "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{
+         "1.", " ", "Check", " ", "that", " ", "all", " ", "of", " ", "the", 
+          " ", "determinised", " ", "controller", " ", "points", " ", "are", 
+          " ", "in", " ", "the", " ", "original"}], "*)"}], 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"!", "isNOK"}], ",", "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"j", "=", "1"}], ";", " ", 
+            RowBox[{"(*", 
+             RowBox[{
+             "Since", " ", "the", " ", "lists", " ", "are", " ", "ordered", 
+              " ", "we", " ", "search", " ", "in", " ", "the", " ", 
+              "original", " ", "array", " ", "from", " ", "the", " ", "last", 
+              " ", "position"}], "*)"}], "\[IndentingNewLine]", 
+            RowBox[{"For", "[", 
+             RowBox[{
+              RowBox[{"i", "=", "1"}], ",", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"i", "\[LessEqual]", 
+                 RowBox[{"Length", "[", "detPointsList", "]"}]}], ")"}], "&&", 
+               RowBox[{"!", "isNOK"}]}], ",", 
+              RowBox[{"i", "++"}], ",", " ", "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{"isNOK", " ", "=", " ", "True"}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"For", "[", 
+                RowBox[{",", 
+                 RowBox[{
+                  RowBox[{"(", 
+                   RowBox[{"j", " ", "\[LessEqual]", " ", 
+                    RowBox[{"Length", "[", "origPointsList", "]"}]}], ")"}], "&&",
+                   "isNOK"}], ",", " ", 
+                 RowBox[{"j", "++"}], ",", "\[IndentingNewLine]", 
+                 RowBox[{
+                  RowBox[{"If", "[", 
+                   RowBox[{
+                    RowBox[{
+                    RowBox[{"detPointsList", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], "==", 
+                    RowBox[{"origPointsList", "[", 
+                    RowBox[{"[", "j", "]"}], "]"}]}], ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{
+                    RowBox[{"isNOK", " ", "=", " ", "False"}], ";"}], ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{
+                    RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"detPointsList", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], ">", 
+                    RowBox[{"origPointsList", "[", 
+                    RowBox[{"[", "j", "]"}], "]"}]}], ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{
+                    RowBox[{"j", " ", "=", " ", 
+                    RowBox[{"Length", "[", "origPointsList", "]"}]}], ";"}]}],
+                     "\[IndentingNewLine]", "]"}], ";"}]}], 
+                   "\[IndentingNewLine]", "]"}], ";"}]}], 
+                "\[IndentingNewLine]", "]"}], ";"}]}], "\[IndentingNewLine]", 
+             "]"}], ";", "\[IndentingNewLine]", 
+            RowBox[{"If", "[", 
+             RowBox[{"isNOK", ",", "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{"Print", "[", 
+                RowBox[{
+                "\"\<Error: Data point @detPointsSorted[\>\"", ",", " ", "i", 
+                 ",", " ", "\"\<] = \>\"", ",", "\[IndentingNewLine]", 
+                 RowBox[{"detPointsList", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}], ",", " ", 
+                 "\"\< is missing in origPointsSorted!\>\""}], "]"}], ";"}]}],
+              "\[IndentingNewLine]", "]"}], ";"}]}], "\[IndentingNewLine]", 
+          "]"}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+          "2.", " ", "Check", " ", "that", " ", "all", " ", "states", " ", 
+           "of", " ", "the", " ", "original", " ", "controller", " ", "are", 
+           " ", "in", " ", "the", " ", "determinized", " ", "one"}], "*)"}], 
+         "\[IndentingNewLine]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"!", "isNOK"}], ",", "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"origStatesList", " ", "=", " ", 
+             RowBox[{"DeleteDuplicates", "[", 
+              RowBox[{"Sort", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"Drop", "[", 
+                  RowBox[{"#", ",", 
+                   RowBox[{"stateDim", "-", "origDim"}]}], "]"}], "&"}], " ", 
+                "/@", " ", "origPointsList"}], "]"}], "]"}]}], ";", 
+            "\[IndentingNewLine]", 
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"Length", "[", "origStatesList", "]"}], " ", 
+               "\[Equal]", " ", 
+               RowBox[{"Length", "[", "detStatesList", "]"}]}], ",", 
+              RowBox[{"(*", 
+               RowBox[{
+                RowBox[{"Print", "[", 
+                 RowBox[{
+                 "\"\<Chercking on the array elements to be equal with \
+precision: \>\"", ",", " ", "precision"}], "]"}], ";"}], "*)"}], 
+              RowBox[{
+               RowBox[{"For", "[", 
+                RowBox[{
+                 RowBox[{"i", "=", "1"}], ",", 
+                 RowBox[{
+                  RowBox[{"(", 
+                   RowBox[{"i", "\[LessEqual]", 
+                    RowBox[{"Length", "[", "origStatesList", "]"}]}], ")"}], 
+                  " ", "&&", " ", 
+                  RowBox[{"!", "isNOK"}]}], ",", 
+                 RowBox[{"i", "++"}], ",", " ", 
+                 RowBox[{
+                  RowBox[{"If", "[", 
+                   RowBox[{
+                    RowBox[{
+                    RowBox[{"origStatesList", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], "\[NotEqual]", " ", 
+                    RowBox[{"detStatesList", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}]}], ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{
+                    RowBox[{"Print", "[", 
+                    RowBox[{
+                    "\"\<Error: Different data points @\>\"", ",", " ", "i", 
+                    ",", " ", "\"\< \>\"", ",", 
+                    RowBox[{"origStatesList", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], ",", " ", "\"\<<>\>\"", 
+                    ",", " ", 
+                    RowBox[{"detStatesList", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}]}], "]"}], ";", 
+                    RowBox[{"isNOK", " ", "=", " ", "True"}], ";"}]}], 
+                   "\[IndentingNewLine]", "]"}], ";"}]}], 
+                "\[IndentingNewLine]", "]"}], ";"}], ",", 
+              "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{"Print", "[", 
+                RowBox[{"\"\<Error: Different size lists \>\"", ",", 
+                 RowBox[{"Length", "[", "origStatesList", "]"}], " ", ",", 
+                 " ", "\"\< != \>\"", ",", " ", 
+                 RowBox[{"Length", "[", "detStatesList", "]"}]}], "]"}], ";", 
+               
+               RowBox[{"isNOK", " ", "=", " ", "True"}], ";"}]}], 
+             "\[IndentingNewLine]", "]"}], ";"}]}], "\[IndentingNewLine]", 
+          "]"}], ";"}]}], "\[IndentingNewLine]", "]"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"Report", " ", "the", " ", "test", " ", "result"}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{"isNOK", ",", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"Print", "[", "\"\<FAILED\>\"", "]"}], ";"}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"Print", "[", "\"\<PASSED\>\"", "]"}], ";"}]}], 
+       "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", "isNOK", "]"}], ";"}]}], "\[IndentingNewLine]", 
+    "]"}]}], ";"}]}], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.712411126237515*^9, 3.7124111268825407`*^9}, {
+   3.7124121777561693`*^9, 3.712412210503365*^9}, {3.712467094538907*^9, 
+   3.712467098415023*^9}, {3.7136883275694103`*^9, 3.713688420507473*^9}, {
+   3.713688454658139*^9, 3.713688480660437*^9}, {3.713688513750091*^9, 
+   3.713688565537849*^9}, {3.713688604163933*^9, 3.713688658777047*^9}, {
+   3.713688722569086*^9, 3.713688834407054*^9}, {3.7136888837019*^9, 
+   3.713688917225368*^9}, {3.713688955582116*^9, 3.713688962243266*^9}, {
+   3.7136890869581747`*^9, 3.713689129998344*^9}, 3.7136897034260902`*^9, {
+   3.713689827748094*^9, 3.7136900401506977`*^9}, {3.713690093411528*^9, 
+   3.713690293962772*^9}, 3.7136905231301117`*^9, {3.7136905792264433`*^9, 
+   3.713690594917953*^9}, 3.713690653658868*^9, {3.713691272953252*^9, 
+   3.713691273476925*^9}, {3.71369135005267*^9, 3.713691354059722*^9}, {
+   3.713691498395628*^9, 3.713691554686668*^9}, {3.7136916000705423`*^9, 
+   3.7136917613415728`*^9}, {3.7136918283781347`*^9, 3.71369196347816*^9}, {
+   3.713692071158723*^9, 3.713692073305665*^9}, {3.713692121673142*^9, 
+   3.713692182001397*^9}, {3.713692411147872*^9, 3.713692412323946*^9}, {
+   3.713692539607335*^9, 3.713692547077053*^9}, {3.7136961179755573`*^9, 
+   3.7136964005855417`*^9}, {3.713696433913926*^9, 3.7136966549066*^9}, 
+   3.713696903804984*^9, {3.713697098170874*^9, 3.713697117366693*^9}, {
+   3.713697161130168*^9, 3.713697191564221*^9}, {3.71369725661049*^9, 
+   3.713697267658826*^9}, {3.713697336414476*^9, 3.713697367704257*^9}, {
+   3.7136974584072866`*^9, 3.7136975108816967`*^9}, {3.71369757618892*^9, 
+   3.713697603446463*^9}, {3.7136976643752003`*^9, 3.713697681563149*^9}, {
+   3.713698905478753*^9, 3.713699060751748*^9}, {3.713699094160152*^9, 
+   3.713699197509096*^9}, {3.7136992488218937`*^9, 3.7136992518785477`*^9}, {
+   3.713699297603043*^9, 3.7136993004672403`*^9}, {3.713700405669635*^9, 
+   3.71370042373204*^9}, 3.714368432994207*^9, {3.7143765954030313`*^9, 
+   3.714376622233129*^9}, {3.714376687743239*^9, 3.714376915800332*^9}, {
+   3.714376955850799*^9, 3.714376982499608*^9}, {3.714377084710874*^9, 
+   3.714377093113861*^9}, {3.714453648720771*^9, 3.714453650883895*^9}, {
+   3.714453804529648*^9, 3.7144538243510237`*^9}, {3.714453869934848*^9, 
+   3.7144539094854097`*^9}, {3.71445395913947*^9, 3.714454020355976*^9}, {
+   3.714454056182379*^9, 3.71445410706654*^9}, {3.714454240878132*^9, 
+   3.7144542701737432`*^9}, {3.714454546797381*^9, 3.714454569269701*^9}, {
+   3.7144547537023706`*^9, 3.714454767611952*^9}, {3.714455809077414*^9, 
+   3.71445580923085*^9}, {3.7144560443535833`*^9, 3.714456044497817*^9}, {
+   3.714456237001226*^9, 3.7144562446211233`*^9}, {3.71445652877874*^9, 
+   3.714456539778064*^9}, {3.714456614701174*^9, 3.714456735135849*^9}, {
+   3.714456784292363*^9, 3.7144567883987513`*^9}, {3.714456842843665*^9, 
+   3.714456864711953*^9}, {3.714456948362966*^9, 3.7144569489104137`*^9}, {
+   3.714457009185553*^9, 3.714457010606749*^9}, {3.714457053249362*^9, 
+   3.714457121311117*^9}, {3.714457174740032*^9, 3.714457203680979*^9}, {
+   3.714457547430025*^9, 3.7144577956229897`*^9}, {3.71445804938338*^9, 
+   3.714458052710175*^9}, 3.714458234473905*^9, {3.7144582739658527`*^9, 
+   3.714458286988936*^9}, {3.714458703306736*^9, 3.7144587111257668`*^9}, 
+   3.71445893908397*^9, {3.714458979939279*^9, 3.7144589939105873`*^9}, {
+   3.714459093140131*^9, 3.714459125082625*^9}, {3.714459254984178*^9, 
+   3.71445930023812*^9}, 3.714459415477016*^9, {3.71445958398916*^9, 
+   3.714459661068544*^9}, {3.714459718261621*^9, 3.714459794635407*^9}, {
+   3.714459849767899*^9, 3.714459858787417*^9}, {3.714459893478568*^9, 
+   3.714459927621581*^9}, {3.714460063007642*^9, 3.714460090169348*^9}, {
+   3.7144601571814737`*^9, 3.7144602426076612`*^9}, {3.71446028626746*^9, 
+   3.7144603661076307`*^9}, {3.714460472626775*^9, 3.714460487448887*^9}, {
+   3.714460563838089*^9, 3.7144606057941427`*^9}, {3.714645864607218*^9, 
+   3.714646037651967*^9}, {3.714646128125309*^9, 3.714646245780199*^9}, {
+   3.714646822667878*^9, 3.7146468232187853`*^9}, {3.714703908470702*^9, 
+   3.714703931495063*^9}, {3.714704011385684*^9, 3.71470401182935*^9}, {
+   3.714704066558543*^9, 3.714704099534453*^9}, {3.714704206753396*^9, 
+   3.714704226297874*^9}, {3.714704309103361*^9, 3.714704344920225*^9}, {
+   3.714705524278916*^9, 3.7147056078031063`*^9}, {3.714705657823906*^9, 
+   3.714705674826627*^9}, {3.714705723008391*^9, 3.714705731962381*^9}, {
+   3.714705850561542*^9, 3.714705948162786*^9}, 3.71661747812538*^9, 
+   3.716617513508067*^9, {3.717905467344047*^9, 3.717905481630685*^9}, {
+   3.71790553282948*^9, 3.71790554642852*^9}, {3.717905591308462*^9, 
+   3.7179056177205753`*^9}, {3.717905804005679*^9, 3.7179058108051453`*^9}, {
+   3.717905969253203*^9, 3.717906000831077*^9}, {3.717906075910746*^9, 
+   3.71790610444119*^9}, 
+   3.717910270374145*^9},ExpressionUUID->"2ca0ca70-7416-4eb4-bfd8-\
+20d0c132bf7e"],
+
+Cell[TextData[StyleBox["Run test cases", "Title"]], "Text",
+ CellChangeTimes->{{3.7136904510309668`*^9, 
+  3.713690454014361*^9}},ExpressionUUID->"2d26e505-da9b-4fad-982b-\
+a32851812e20"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"testDetermCtrl", "[", 
+   RowBox[{
+   "modelsPath", ",", " ", "\"\<dcdc/1\>\"", ",", " ", "2", ",", " ", 
+    "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_ext\>\"", ",", " ", 
+    "precision", ",", " ", "False"}], "]"}], ";"}]], "Input",
+ CellChangeTimes->{{3.7216421411443*^9, 
+  3.721642142827173*^9}},ExpressionUUID->"3909951c-4158-40ff-afce-\
+77124a1a8598"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/1/blgdet/c_ext\
+\"\>"], "Print",
+ CellChangeTimes->{3.721642148143571*^9, 
+  3.721642208439102*^9},ExpressionUUID->"38a6d438-a7c3-43bf-8504-\
+474127c242fc"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{3.721642148143571*^9, 
+  3.7216422087862263`*^9},ExpressionUUID->"8c580e5c-1d45-4413-9b8e-\
+158efe2fd5b1"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "The", " ", "symbolic", " ", "controllers", " ", "are", " ", "only", " ", 
+    "checked", " ", "for", " ", "being", " ", "fully", " ", "determinized"}], 
+   "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<sym/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "True"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/40\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<sym/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "True"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<sym/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "True"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/40\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<sym/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "True"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<sym/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "True"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/40\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<sym/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "True"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/1\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<sym/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "True"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/2\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<sym/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "True"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/1\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<sym/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "True"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/2\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<sym/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "True"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "The", " ", "determinized", " ", "controllers", " ", "are", " ", 
+     "checked", " ", "for", " ", "being", " ", "determinized", " ", "and", 
+     " ", "being", " ", "subsets", " ", "of", " ", "the", " ", "original", 
+     " ", "ones"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/5\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/10\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/15\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/20\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/25\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/40\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/80\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/120\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/160\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/200\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/40\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/80\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/120\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/160\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/200\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/40\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/80\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/120\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/160\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/200\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/1\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/2\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/3\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/4\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/5\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/1\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/2\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/3\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<blgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "The", " ", "determinized", " ", "controllers", " ", "are", " ", 
+     "checked", " ", "for", " ", "being", " ", "determinized", " ", "and", 
+     " ", "being", " ", "subsets", " ", "of", " ", "the", " ", "original", 
+     " ", "ones"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/5\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/10\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/15\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/20\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/25\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/40\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/80\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/120\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/160\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/200\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/40\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/80\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/120\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/160\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/200\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/40\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/80\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/120\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/160\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/200\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/1\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/2\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";", 
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/3\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";", 
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/4\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";", 
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/5\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/1\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/2\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/3\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<bldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "The", " ", "determinized", " ", "controllers", " ", "are", " ", 
+     "checked", " ", "for", " ", "being", " ", "determinized", " ", "and", 
+     " ", "being", " ", "subsets", " ", "of", " ", "the", " ", "original", 
+     " ", "ones"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/5\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/10\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/15\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/20\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/25\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/40\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/80\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/120\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/160\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/200\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/40\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/80\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/120\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/160\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/200\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/40\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/80\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/120\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/160\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/200\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/1\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/2\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/3\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/4\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/5\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/1\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/2\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/3\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<lgdet/c_reo\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "The", " ", "determinized", " ", "controllers", " ", "are", " ", 
+     "checked", " ", "for", " ", "being", " ", "determinized", " ", "and", 
+     " ", "being", " ", "subsets", " ", "of", " ", "the", " ", "original", 
+     " ", "ones"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/5\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/10\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/15\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/20\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/25\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/40\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/80\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/120\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/160\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/200\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/40\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/80\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/120\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/160\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/200\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/40\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/80\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/120\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/160\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/200\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/1\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/2\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";", 
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/3\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";", 
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/4\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";", 
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/5\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/1\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/2\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/3\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<ldet/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "The", " ", "determinized", " ", "controllers", " ", "are", " ", 
+     "checked", " ", "for", " ", "being", " ", "determinized", " ", "and", 
+     " ", "being", " ", "subsets", " ", "of", " ", "the", " ", "original", 
+     " ", "ones"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/5\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/10\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/15\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/20\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcm/25\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/40\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/80\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/120\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/160\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc/200\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/40\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/80\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/120\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/160\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/1/200\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/1\>\"", ",", " ", "2", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/40\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/80\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/120\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/160\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<dcdc_rec/2/200\>\"", ",", " ", "2", ",", 
+      " ", "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", 
+      "precision", ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/1\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/2\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";", 
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/3\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";", 
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/4\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";", 
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<vehicle/5\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/1\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/2\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"testDetermCtrl", "[", 
+     RowBox[{
+     "modelsPath", ",", " ", "\"\<aircraft/3\>\"", ",", " ", "3", ",", " ", 
+      "\"\<scots/c_reo\>\"", ",", " ", "\"\<det/c\>\"", ",", " ", "precision",
+       ",", " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]"}]}]], "Input",\
+
+ CellChangeTimes->{{3.712411141065707*^9, 3.7124114431111603`*^9}, {
+   3.712411491207597*^9, 3.712411686457197*^9}, {3.712411867045248*^9, 
+   3.712411934984026*^9}, 3.712412110680766*^9, {3.713686838087604*^9, 
+   3.713686887328871*^9}, {3.713686972743822*^9, 3.71368697468064*^9}, {
+   3.7136870256044483`*^9, 3.713687085171369*^9}, {3.7136871425433283`*^9, 
+   3.713687391360813*^9}, {3.713687455168241*^9, 3.713687527958777*^9}, {
+   3.713687568844809*^9, 3.7136876200090847`*^9}, {3.713687682412136*^9, 
+   3.713687716549157*^9}, {3.7136877557968884`*^9, 3.7136877592068367`*^9}, {
+   3.713687815870543*^9, 3.713687919769414*^9}, {3.71368795438491*^9, 
+   3.713688075508581*^9}, {3.713688425437344*^9, 3.7136884357606163`*^9}, {
+   3.713688531511742*^9, 3.71368853900113*^9}, {3.713688583690736*^9, 
+   3.713688628256523*^9}, 3.713688730728232*^9, 3.7136887743968973`*^9, {
+   3.71368882211229*^9, 3.713688902632594*^9}, {3.713688936252757*^9, 
+   3.713689057740613*^9}, {3.7136891344246807`*^9, 3.713689149908471*^9}, 
+   3.7136896998983603`*^9, {3.713689759859931*^9, 3.713689762854725*^9}, {
+   3.713690307491297*^9, 3.7136904423159513`*^9}, {3.713690472808051*^9, 
+   3.713690474829895*^9}, {3.713690562575556*^9, 3.713690575428403*^9}, {
+   3.713690659995913*^9, 3.7136907006641617`*^9}, {3.713691507182119*^9, 
+   3.71369151745744*^9}, {3.71369667127802*^9, 3.713696739406639*^9}, {
+   3.714452734811899*^9, 3.7144528516090813`*^9}, {3.7144529626586533`*^9, 
+   3.714453093487516*^9}, {3.714453158491661*^9, 3.714453305434745*^9}, {
+   3.7144533750987043`*^9, 3.714453379907064*^9}, {3.714453456893515*^9, 
+   3.7144534691841707`*^9}, {3.714453586190859*^9, 3.714453602031966*^9}, {
+   3.7144543294738503`*^9, 3.714454402834004*^9}, {3.714454710710472*^9, 
+   3.7144547348887177`*^9}, {3.714454782179821*^9, 3.714454838277604*^9}, {
+   3.714483585757971*^9, 3.714483612515048*^9}, {3.714492565919736*^9, 
+   3.7144925685190487`*^9}, {3.714723346347004*^9, 3.714723379706133*^9}, {
+   3.714724953439183*^9, 3.714725071989554*^9}, {3.71475587991473*^9, 
+   3.7147559173579607`*^9}, {3.7159286313725157`*^9, 3.715928706202076*^9}, {
+   3.7159371467675657`*^9, 3.715937297184256*^9}, {3.716543747662575*^9, 
+   3.716543825136941*^9}, {3.7165438900458183`*^9, 3.716544023828404*^9}, {
+   3.7165453139170713`*^9, 3.7165453267962418`*^9}, {3.7165461407935133`*^9, 
+   3.716546140860029*^9}, {3.716549889621166*^9, 3.7165498903372803`*^9}, {
+   3.716549931216029*^9, 3.716549931931119*^9}, {3.716550642049384*^9, 
+   3.716551023554678*^9}, {3.717836081702154*^9, 3.717836085333363*^9}, {
+   3.717839832769227*^9, 3.717839836481947*^9}, {3.717841270329637*^9, 
+   3.7178412845290413`*^9}, {3.717843962417982*^9, 
+   3.717844193811606*^9}},ExpressionUUID->"4d263be4-d8ae-47ab-99a1-\
+24ea22840402"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/1/sym/c_reo\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.718975629495553*^9},ExpressionUUID->"a46564bd-5810-4297-be98-\
+f4675648a4df"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975629634432*^9},ExpressionUUID->"a314e530-c16e-4365-a747-\
+750c1963293f"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/40/sym/c_reo\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.718975629651095*^9},ExpressionUUID->"34617d67-f053-46a1-b0dd-\
+d92d6aaeb74d"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975629966988*^9},ExpressionUUID->"4a29be64-6957-49b4-b642-\
+fbce784f0661"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/1/sym/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975629986636*^9},ExpressionUUID->"7508b7f9-723f-4ec4-a8fc-\
+402ff615dc2b"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975630057213*^9},ExpressionUUID->"17355ddd-e6ce-472b-8c79-\
+523bd274137f"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/40/sym/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975630073545*^9},ExpressionUUID->"a881ae9e-fda2-4cad-8a8d-\
+5981aefa77a7"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975630305726*^9},ExpressionUUID->"603971e3-3f5d-4320-81f3-\
+233c9a19c3c0"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/1/sym/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975630316099*^9},ExpressionUUID->"c95537d7-fca8-4d15-b5cd-\
+618246f75046"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975630370302*^9},ExpressionUUID->"2a1c9b40-031b-43c1-a9a7-\
+e2a579dbaa97"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/40/sym/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975630380398*^9},ExpressionUUID->"cb98cc39-af18-477f-9065-\
+cd58e06cdf26"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7189756310228786`*^9},ExpressionUUID->"b891ab69-d6e5-454d-b58c-\
+5dc17268e148"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/1/sym/c_reo\
+\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975631038642*^9},ExpressionUUID->"b5d0aa64-92e3-4702-838b-\
+32a3b9bd77a2"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975631278121*^9},ExpressionUUID->"864ffc08-2852-450f-b825-\
+8acff71c1dda"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/2/sym/c_reo\
+\"\>"], "Print",
+ CellChangeTimes->{
+  3.7189756312913647`*^9},ExpressionUUID->"c4a04261-5130-4f90-a4c3-\
+572157cdec07"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975631718144*^9},ExpressionUUID->"1a2ca7ca-d1df-44c9-81a4-\
+bcdf1550ce28"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/1/sym/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7189756317298*^9},ExpressionUUID->"7efe2041-ace7-4d44-ae6d-4c96ceee5702"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975662075357*^9},ExpressionUUID->"1f4f60b1-13af-47e9-a02d-\
+86a9fe3e4b9d"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/2/sym/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975662174827*^9},ExpressionUUID->"de66d7e3-1fb6-4615-b47c-\
+91fe7399377d"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975737465363*^9},ExpressionUUID->"f48f363e-fd6d-46cb-9d72-\
+524e50e302ba"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/1/blgdet/c_reo\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.718975737684557*^9},ExpressionUUID->"8c08b121-ee89-4056-8be8-\
+75c6950f2a6b"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7189757467473307`*^9},ExpressionUUID->"3321d5ca-8c7b-48fc-807e-\
+226daf2094bb"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/5/blgdet/c_reo\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.718975746783325*^9},ExpressionUUID->"9eb30550-15ef-4d80-859f-\
+5bc30a5587d0"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7189757929326057`*^9},ExpressionUUID->"adf7b766-2260-46fb-91da-\
+7453f7c2c6db"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/10/blgdet/c_reo\
+\"\>"], "Print",
+ CellChangeTimes->{
+  3.7189757929887877`*^9},ExpressionUUID->"8121cf94-5b33-4942-866b-\
+9d1badce6850"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.718975885885675*^9},ExpressionUUID->"28d067df-5613-487c-9ac4-\
+2e09b11e689f"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/15/blgdet/c_reo\
+\"\>"], "Print",
+ CellChangeTimes->{
+  3.7189758859607077`*^9},ExpressionUUID->"23225303-9bfa-459b-8a71-\
+19a84071f816"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719031692629355*^9},ExpressionUUID->"e49f18ba-df9c-4428-8fe3-\
+fdf03310aaf6"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/20/blgdet/c_reo\
+\"\>"], "Print",
+ CellChangeTimes->{
+  3.719031692659946*^9},ExpressionUUID->"8be05fe2-5d81-4a4f-a290-\
+e73a278c0ff5"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719031968927849*^9},ExpressionUUID->"fe27690b-52b7-4f25-8a29-\
+f4bafbe42cdb"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/25/blgdet/c_reo\
+\"\>"], "Print",
+ CellChangeTimes->{
+  3.719031969041161*^9},ExpressionUUID->"c9739676-f59b-4363-9092-\
+0528b85059a9"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032248353992*^9},ExpressionUUID->"530f4c8a-3c98-46a7-ba43-\
+bcef78bbff84"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/1/blgdet/c_reo\
+\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032248554462*^9},ExpressionUUID->"90c6e409-85f4-49dd-9c01-\
+a51455115134"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032249068527*^9},ExpressionUUID->"a798fac1-55b7-4e8e-9e83-\
+2ed4552e6a93"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/40/blgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032249099996*^9},ExpressionUUID->"88b1a1e1-dda1-418b-ae3d-\
+09a24d0cd4f5"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032254511365*^9},ExpressionUUID->"bee87a93-c5d8-4552-982a-\
+3f2907a95882"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/80/blgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.71903225454167*^9},ExpressionUUID->"5174ffb7-4680-43c1-8ccb-16dbfecdbaf6"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032263435727*^9},ExpressionUUID->"34da95af-38c4-4c8c-841a-\
+df8be5683dae"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/120/blgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032263458363*^9},ExpressionUUID->"6fed3fc7-2aab-4f67-8719-\
+953bd548b4d4"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032276411717*^9},ExpressionUUID->"98aa4fbe-3419-4a8f-bd2f-\
+3a5a57f3c5cf"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/160/blgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032276485458*^9},ExpressionUUID->"0ab453cb-a758-4053-a0ae-\
+40e8ff0930a2"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032292502754*^9},ExpressionUUID->"7361ba1a-2a76-4d6a-b8ee-\
+54a19e5142a4"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/200/blgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190322925632887`*^9},ExpressionUUID->"13cc9a89-5a05-4fb4-a3ca-\
+bcdca43097dc"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190323118188763`*^9},ExpressionUUID->"e68e994c-913f-4849-988c-\
+06e2144d837b"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/1/blgdet/\
+c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032311870811*^9},ExpressionUUID->"d2dcabf3-59e4-4c7b-a6eb-\
+d81e61a63150"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032312214561*^9},ExpressionUUID->"7f471de4-2189-450f-9e37-\
+744cb90dc6d0"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/40/\
+blgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032312227895*^9},ExpressionUUID->"beda8e38-7d6c-473b-ac2b-\
+d518dc945425"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.71903231512582*^9},ExpressionUUID->"4e5e80a5-678a-4af3-93c5-6b00b06003df"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/80/\
+blgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190323151513844`*^9},ExpressionUUID->"b79b1504-e37a-45a5-9cbb-\
+6fe2f2045fe8"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032320716107*^9},ExpressionUUID->"38d7d667-a793-4199-bc9f-\
+908757ca349d"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/120/\
+blgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032320729788*^9},ExpressionUUID->"ed5497a2-2585-4aaa-9b6f-\
+6e01d5c2405d"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032329295055*^9},ExpressionUUID->"be7b5b8c-44ea-40e4-9a58-\
+1fbad3f85328"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/160/\
+blgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190323293481913`*^9},ExpressionUUID->"80af22bc-1876-4e19-8fa8-\
+92a39ba4a02c"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190323406143208`*^9},ExpressionUUID->"3483b9da-305b-4433-9ebd-\
+5711c918d98e"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/200/\
+blgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032340668812*^9},ExpressionUUID->"1b24c27f-012e-4a5b-911d-\
+17e80f864751"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032354368104*^9},ExpressionUUID->"508849f1-c0ff-44bf-bef2-\
+dd68fcef6ed7"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/1/blgdet/\
+c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032354419009*^9},ExpressionUUID->"aaa3284a-2489-48f5-8f63-\
+1d67eb464fc7"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032354731616*^9},ExpressionUUID->"e0c728e1-bc8c-42aa-affb-\
+486924750e94"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/40/\
+blgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190323547432833`*^9},ExpressionUUID->"73b195b3-1042-4db9-adbe-\
+05291f874089"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190323637709637`*^9},ExpressionUUID->"2e323c1e-c7a4-40a2-90fa-\
+a60475eb43cc"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/80/\
+blgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032363784281*^9},ExpressionUUID->"2014de9a-1cc1-4b66-be45-\
+74cdc4bb86e9"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190323813156567`*^9},ExpressionUUID->"59a2837e-224e-488b-bf98-\
+23aee91e00e9"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/120/\
+blgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032381366781*^9},ExpressionUUID->"70484a70-3bd7-40c1-b91a-\
+c445e01ff11d"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.71903240802796*^9},ExpressionUUID->"38502b6c-49bc-4b95-a7c4-bd36148897db"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/160/\
+blgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190324080913467`*^9},ExpressionUUID->"3962630b-dfb5-4d7a-92e9-\
+1d9774121bf1"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032443638619*^9},ExpressionUUID->"5c3743f7-0284-41da-bdbc-\
+3c2dd364dba9"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/200/\
+blgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032443695263*^9},ExpressionUUID->"eaec81c1-f9f3-4a5a-845b-\
+eab4d5c841f9"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032487284409*^9},ExpressionUUID->"de15f772-c58c-4344-a9c0-\
+a1081a2af89c"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/1/blgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032487340454*^9},ExpressionUUID->"b0e934d1-82b4-4550-aa3e-\
+ae118eac883b"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032488216489*^9},ExpressionUUID->"4b81ca42-0f63-49bf-bb51-\
+74797e792563"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/2/blgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032488265479*^9},ExpressionUUID->"e1d1dd0c-1e9a-45cf-b0a4-\
+5c58109443cf"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190324903490067`*^9},ExpressionUUID->"28d99e14-33c0-42e9-adce-\
+9e62c9077253"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/3/blgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.71903249038021*^9},ExpressionUUID->"6a36d4c5-41a2-414f-9f16-e18db42c9666"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032496265234*^9},ExpressionUUID->"be63e4cb-15e6-488f-bf29-\
+28d6cda9f3a8"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/4/blgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032496279828*^9},ExpressionUUID->"b408e3ac-11f1-4075-a898-\
+c8d66832a0dc"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190325047982893`*^9},ExpressionUUID->"881f0366-c19f-4b31-afc4-\
+97b2f0511dbc"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/5/blgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190325048434677`*^9},ExpressionUUID->"d69745f9-c2c6-4b12-8d5b-\
+7d6ec1ee2a8b"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032515965342*^9},ExpressionUUID->"3faaab54-7486-4811-aadf-\
+f7ebfe3a7b78"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/1/blgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032515980818*^9},ExpressionUUID->"553e8128-830f-4fd9-aaa5-\
+87a627e5701e"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032602274633*^9},ExpressionUUID->"af697856-ae3b-46a5-ae0a-\
+9fb6bc2bb521"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/2/blgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190326023756647`*^9},ExpressionUUID->"e74a8100-0c1c-4efd-95a4-\
+520fc898a627"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032879323772*^9},ExpressionUUID->"17a1bfe5-ef55-49fe-9918-\
+105f50ea66ff"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/3/blgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719032879505794*^9},ExpressionUUID->"b3ba8740-0d23-4d47-a9bf-\
+6cf2d92ab86e"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719033378024198*^9},ExpressionUUID->"a3c025ca-6cf6-4c11-9202-\
+bfd3d117390d"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/1/bldet/c\"\>"],\
+ "Print",
+ CellChangeTimes->{
+  3.719033378202363*^9},ExpressionUUID->"5a402c24-59ac-45c3-ac5a-\
+1675d7398e99"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719033387321475*^9},ExpressionUUID->"d29fcdc0-652a-451a-9314-\
+5adc95ca4c54"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/5/bldet/c\"\>"],\
+ "Print",
+ CellChangeTimes->{
+  3.7190333873357887`*^9},ExpressionUUID->"82168fa9-0826-4328-9142-\
+0db82256dfb0"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719033432502488*^9},ExpressionUUID->"07bcf142-27b2-4ea0-80f9-\
+371703bf5da6"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/10/bldet/c\"\>"]\
+, "Print",
+ CellChangeTimes->{
+  3.7190334325617456`*^9},ExpressionUUID->"cbe81254-41ab-4012-9380-\
+4e71055875f0"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.71903352296589*^9},ExpressionUUID->"2a1693ff-39cd-4716-bc56-d6c4b02b7c7f"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/15/bldet/c\"\>"]\
+, "Print",
+ CellChangeTimes->{
+  3.719033523033347*^9},ExpressionUUID->"1da4a6db-bb0c-435d-9d52-\
+c020e0728318"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719033675134601*^9},ExpressionUUID->"24ebe877-f6e7-4e60-9a69-\
+b5ea3aec7c9c"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/20/bldet/c\"\>"]\
+, "Print",
+ CellChangeTimes->{
+  3.7190336752384977`*^9},ExpressionUUID->"db6e76fa-faae-4fe9-86d6-\
+c4e6465ae689"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190338768071012`*^9},ExpressionUUID->"64243a23-919d-48ba-9191-\
+5925234cb749"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/25/bldet/c\"\>"]\
+, "Print",
+ CellChangeTimes->{
+  3.7190338769427423`*^9},ExpressionUUID->"03e73cf9-3c3c-47c0-ac86-\
+23965cc43dd8"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034128251916*^9},ExpressionUUID->"bd279704-d9af-4d22-a167-\
+759e121fd011"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/1/bldet/c\"\>"]\
+, "Print",
+ CellChangeTimes->{
+  3.719034128446177*^9},ExpressionUUID->"eb03b39a-a900-47ca-897d-\
+d0257631cdd3"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190341288446417`*^9},ExpressionUUID->"95840d45-1ccb-4655-af7f-\
+97c0d4ea71f5"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/40/bldet/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.71903412886624*^9},ExpressionUUID->"6e1bde7f-41e6-4fef-9495-468873741ee9"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190341327950163`*^9},ExpressionUUID->"9a4a78df-0b69-4299-8ade-\
+3bd2891c0883"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/80/bldet/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.719034132811266*^9},ExpressionUUID->"f8055410-f728-4538-ac89-\
+c9ad75b15e5a"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034140644122*^9},ExpressionUUID->"34761e40-8d35-4860-9524-\
+b451bf33a605"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/120/bldet/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.719034140659672*^9},ExpressionUUID->"455c4418-8239-400b-a77d-\
+6f7789472ca5"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034153615745*^9},ExpressionUUID->"b48f5269-174b-48af-98ac-\
+f8211f3efbbb"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/160/bldet/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.719034153648169*^9},ExpressionUUID->"353fcf81-022b-43eb-9225-\
+444003c2672b"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034168954012*^9},ExpressionUUID->"f96c8f94-d6be-425d-8e0c-\
+bf8ed7c975d9"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/200/bldet/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.71903416904215*^9},ExpressionUUID->"cee45654-80cc-4bf0-a1e2-929829eb4963"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034187675795*^9},ExpressionUUID->"c004ef68-c6de-4ac6-930d-\
+b22b029f1ce8"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/1/bldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190341877477703`*^9},ExpressionUUID->"d9146076-6105-4c55-9f86-\
+5e3b7cd31d6c"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034188093554*^9},ExpressionUUID->"73adb543-d609-4eb3-8708-\
+7ae3cf365f55"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/40/bldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034188110001*^9},ExpressionUUID->"b2eb7a0e-7284-4465-84bb-\
+2f3c95a3285c"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034191197363*^9},ExpressionUUID->"7a453bff-536b-40cc-a77c-\
+61af8d9f20a1"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/80/bldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190341912114143`*^9},ExpressionUUID->"432fedfb-1914-421a-9bda-\
+1150eac89815"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034196911944*^9},ExpressionUUID->"0b07a2d7-36c7-480c-a765-\
+d6a4fddaa3ab"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/120/\
+bldet/c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034196929336*^9},ExpressionUUID->"05965bb8-2382-4d04-a9cd-\
+07f54a4fea93"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034205918438*^9},ExpressionUUID->"8fe14cb7-fac7-4a6c-a5a3-\
+6c8e9583d67b"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/160/\
+bldet/c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034205980248*^9},ExpressionUUID->"503262e9-cf14-4c91-92ac-\
+35ef551e778c"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034218261154*^9},ExpressionUUID->"21d5327c-1bb3-4c80-9d71-\
+7d4771ea3b8d"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/200/\
+bldet/c\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190342182841043`*^9},ExpressionUUID->"e1cb5c1c-dbaa-4dda-b3d8-\
+de2293a0a6c3"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034234019535*^9},ExpressionUUID->"500d8876-6480-4bed-b88d-\
+e5a73dd3fee6"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/1/bldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034234079336*^9},ExpressionUUID->"f5bf34b5-7f37-4c5c-a132-\
+0d84b23e7e36"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034234410019*^9},ExpressionUUID->"0785c2f2-6bd5-4555-82a0-\
+ce13e9a40692"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/40/bldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034234423915*^9},ExpressionUUID->"ec326441-c268-496f-a228-\
+52e25f918e5c"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034244143428*^9},ExpressionUUID->"30524b4a-eded-4d18-9ce2-\
+7cd772fe1266"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/80/bldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034244156554*^9},ExpressionUUID->"94c98115-eb57-4f73-8a3b-\
+600fa3dd60d2"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190342636795883`*^9},ExpressionUUID->"92e240ab-fc5b-4999-b281-\
+33179c4df68c"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/120/\
+bldet/c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034263754772*^9},ExpressionUUID->"87b7ca1d-e0a0-41a2-850a-\
+0a815fc0aaa3"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034291296597*^9},ExpressionUUID->"3313a5e5-6405-4301-8670-\
+d15db4d2276b"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/160/\
+bldet/c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034291360285*^9},ExpressionUUID->"b6e43ab4-3f67-4300-8c47-\
+a45436a681da"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034329917783*^9},ExpressionUUID->"b98e00ab-2a71-484a-9695-\
+6a5f1ab2b9c5"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/200/\
+bldet/c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034329982066*^9},ExpressionUUID->"2dde647f-207e-4a2a-811d-\
+99b67e44d94f"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034381755458*^9},ExpressionUUID->"ab9dccd8-6175-4edc-8e54-\
+31009822caae"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/1/bldet/c\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719034381831921*^9},ExpressionUUID->"1fee43e9-01ac-4278-af52-\
+62d590b167bc"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034382800562*^9},ExpressionUUID->"198378a9-10a7-4af1-a106-\
+aa1f3416b6a7"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/2/bldet/c\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.71903438287703*^9},ExpressionUUID->"d4e0e9a8-5d15-4297-a7c3-368976503ed0"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034385301482*^9},ExpressionUUID->"2ccf475f-9412-4927-9491-\
+25fe5483f572"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/3/bldet/c\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719034385324752*^9},ExpressionUUID->"5880c7d9-0291-4adb-aa0a-\
+1e8381a47db8"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.71903439165432*^9},ExpressionUUID->"5e7d19b6-b0d1-4898-ab59-718508a2ef42"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/4/bldet/c\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719034391668345*^9},ExpressionUUID->"44ed21f3-d07f-4058-ae8a-\
+1b2de3995645"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034400520217*^9},ExpressionUUID->"68eac208-1a04-4f77-8ed3-\
+9b1576f95cb2"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/5/bldet/c\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719034400584659*^9},ExpressionUUID->"c6ab017a-c7c3-44d2-a365-\
+14a82238a9be"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034412073888*^9},ExpressionUUID->"027a13ac-b275-49b9-a1a9-\
+a051e631301b"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/1/bldet/c\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719034412157341*^9},ExpressionUUID->"9d899131-4104-47c8-950c-\
+3a1d28a6ffea"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034501498972*^9},ExpressionUUID->"a0874c5e-c237-4086-97c6-\
+7f7456fef356"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/2/bldet/c\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719034501644294*^9},ExpressionUUID->"d63c86b1-151f-41e1-b46a-\
+b92582005cb2"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719034727962049*^9},ExpressionUUID->"0aeee12e-13a8-478d-b303-\
+44a79fd412e5"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/3/bldet/c\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719034728147558*^9},ExpressionUUID->"04c93585-5dbe-4a79-a68a-\
+76f600469844"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035154693308*^9},ExpressionUUID->"c0d00c5d-1f0b-4c07-b6ea-\
+734f33d9ae68"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/1/lgdet/c_reo\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719035154967264*^9},ExpressionUUID->"dea2c459-e6ed-42f0-acc7-\
+6b7fd7a19d72"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035164853615*^9},ExpressionUUID->"d005c821-1f16-42e7-8c79-\
+5041774f6302"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/5/lgdet/c_reo\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719035164877953*^9},ExpressionUUID->"7b7ac1ed-1db1-4e06-b810-\
+1406ccdc0d78"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035211076769*^9},ExpressionUUID->"f688d1cf-bd74-4d1d-a632-\
+7876f071c2a8"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/10/lgdet/c_reo\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719035211146351*^9},ExpressionUUID->"592100b2-2653-47f0-9169-\
+864f1db7e284"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035306576516*^9},ExpressionUUID->"539e6d2e-97da-4018-a276-\
+682faff89eaa"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/15/lgdet/c_reo\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719035306644902*^9},ExpressionUUID->"cb6b3d34-3244-49fe-b873-\
+d6878592b293"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190354457508583`*^9},ExpressionUUID->"3840eb37-85da-44f0-9fc6-\
+215d1aa7e785"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/20/lgdet/c_reo\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719035445855781*^9},ExpressionUUID->"91ac24bf-57b2-4f5c-9872-\
+dc4a1be4cd5a"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035630841425*^9},ExpressionUUID->"1c7f6fbd-55d0-47c9-8dd0-\
+7cbc85628e48"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/25/lgdet/c_reo\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719035630958296*^9},ExpressionUUID->"2e59d11f-4204-42d4-80a2-\
+3e25b73b256a"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190358703026133`*^9},ExpressionUUID->"7b5621c1-2d5c-4942-8e1f-\
+38ba7444fb43"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/1/lgdet/c_reo\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.7190358704710293`*^9},ExpressionUUID->"5f952c4b-ab31-4581-a95c-\
+08ccddd72f61"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190358708817377`*^9},ExpressionUUID->"902c89c4-b3a2-4d75-afb1-\
+1eb63057c92f"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/40/lgdet/c_reo\
+\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190358708941727`*^9},ExpressionUUID->"8868fc51-df29-475e-81b5-\
+92c294961069"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035874945928*^9},ExpressionUUID->"64412e0e-fc3e-48e0-8f23-\
+f39849cb4e97"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/80/lgdet/c_reo\
+\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035874995047*^9},ExpressionUUID->"9608c2cb-dda1-4147-9b86-\
+8e4f0acf4643"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035883890459*^9},ExpressionUUID->"b86b85f3-7233-44c0-9af9-\
+c2bc315c930a"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/120/lgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035883908517*^9},ExpressionUUID->"2e80852b-663a-42a0-be32-\
+9936827dc312"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.71903589657619*^9},ExpressionUUID->"134aafe5-b6c2-4c2a-b0ea-cafd6f90418e"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/160/lgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190358965903463`*^9},ExpressionUUID->"b640cd12-3610-4a44-a42f-\
+365d7a3b6769"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190359126231737`*^9},ExpressionUUID->"8b3284e0-2334-4a0a-80db-\
+f133ad03d740"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/200/lgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190359126797247`*^9},ExpressionUUID->"e29b924a-78e6-44d1-a95d-\
+575ff84458cc"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035933636359*^9},ExpressionUUID->"7257c962-e5c7-43f4-9fb7-\
+0051cd136c97"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/1/lgdet/\
+c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190359336974297`*^9},ExpressionUUID->"7b4228f5-c617-46b1-88f6-\
+c8249660756b"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190359340446863`*^9},ExpressionUUID->"0ef48dd9-e13e-4f93-b656-\
+82a62bd96f2a"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/40/lgdet/\
+c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190359340603333`*^9},ExpressionUUID->"c20238d8-9516-43e7-975f-\
+f6f3396456ab"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035937194933*^9},ExpressionUUID->"14ff90c1-0735-419c-a10b-\
+fdea3d192569"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/80/lgdet/\
+c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190359372229567`*^9},ExpressionUUID->"4bc2c6ce-ff79-4318-b846-\
+505779707bae"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035944364999*^9},ExpressionUUID->"72f707aa-2d2a-4467-9117-\
+b3404618784f"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/120/\
+lgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035944387145*^9},ExpressionUUID->"c5737942-f3f3-433b-ae94-\
+515fc0da30ad"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190359537762814`*^9},ExpressionUUID->"796de8db-fd95-41cd-84b9-\
+7b845485589d"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/160/\
+lgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190359539123697`*^9},ExpressionUUID->"395d5094-b2a5-4be2-9462-\
+ddba4cdef6e8"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035965915463*^9},ExpressionUUID->"8d704ffb-760e-4a3f-9465-\
+2549b2f1b89d"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/200/\
+lgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190359659790077`*^9},ExpressionUUID->"ccfdef77-e5a7-4070-a5fb-\
+a157cd0dec48"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035980989773*^9},ExpressionUUID->"daa5d773-9eee-4ee1-a21f-\
+957b3169a5cb"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/1/lgdet/\
+c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035981052517*^9},ExpressionUUID->"16eff989-18c3-494d-896f-\
+2f677e8e91d4"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035981428441*^9},ExpressionUUID->"25bc74a9-a54f-4898-ab22-\
+2ae3a4c5b9bc"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/40/lgdet/\
+c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035981445724*^9},ExpressionUUID->"149287c0-c93a-40a1-84b2-\
+63fe799ae953"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190359905805683`*^9},ExpressionUUID->"49867d85-bcbd-4165-ac93-\
+0526c4e66dce"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/80/lgdet/\
+c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719035990602582*^9},ExpressionUUID->"b5a37aa5-5c0a-49c6-a9c5-\
+b36c4873dada"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036008612381*^9},ExpressionUUID->"6bb0d319-e81c-4ae0-b6cf-\
+e51da3077c7e"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/120/\
+lgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036008668509*^9},ExpressionUUID->"32fef52f-e755-4fc5-a726-\
+e15019038531"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190360362590303`*^9},ExpressionUUID->"90733939-af27-4cb4-83bf-\
+d121805f489b"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/160/\
+lgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190360363219624`*^9},ExpressionUUID->"910136a4-5b0f-42f7-8435-\
+e36b0a840529"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036071889254*^9},ExpressionUUID->"2163bb9b-c743-4b6b-acb0-\
+b1630f6a6256"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/200/\
+lgdet/c_reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036071944181*^9},ExpressionUUID->"387c0ba4-cd07-481c-bcb7-\
+1420247ec726"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190361182775927`*^9},ExpressionUUID->"edef2970-2cf5-491a-967f-\
+5bd942838a0a"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/1/lgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036118329823*^9},ExpressionUUID->"6a6bf85f-263e-486d-84e0-\
+36d39121b1c2"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036119300848*^9},ExpressionUUID->"7195801d-c6f9-4235-8a77-\
+b3789b8b0b2c"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/2/lgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.71903611935793*^9},ExpressionUUID->"0cbc58e6-f323-4d9b-b62e-67b3fa01d1fe"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036121535132*^9},ExpressionUUID->"f8cc9454-4a30-49eb-9625-\
+e5ab76f271a3"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/3/lgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036121546919*^9},ExpressionUUID->"b23e8366-150d-4e6e-98b4-\
+d579ffc8a2c9"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190361282010403`*^9},ExpressionUUID->"7046c5af-2ebc-4fd7-8fb7-\
+a60144e3c24a"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/4/lgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036128213921*^9},ExpressionUUID->"6c88a43f-e085-4254-9049-\
+60205b5b8728"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036136909545*^9},ExpressionUUID->"6a3b5330-3c7d-4892-a748-\
+7404de8e6960"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/5/lgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036136921522*^9},ExpressionUUID->"5a557862-7876-4afe-b88f-\
+2d0d79f56259"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036147968889*^9},ExpressionUUID->"9b7328b9-674c-4018-a630-\
+aea7bb522f28"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/1/lgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036148023859*^9},ExpressionUUID->"63cf1254-fc56-429a-a11d-\
+455d20b7819d"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036235105199*^9},ExpressionUUID->"df416bb6-f260-4378-b9bd-\
+a19d05c6a294"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/2/lgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036235231804*^9},ExpressionUUID->"330b4a0d-ae8b-4242-bb1e-\
+1de820ba6e1e"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036462396493*^9},ExpressionUUID->"d986ff8d-c482-4de8-add2-\
+4f736d6242e3"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/3/lgdet/c_\
+reo\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190364626625338`*^9},ExpressionUUID->"c0970bf7-3c56-40d9-b0ec-\
+3f526bf8e210"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036888961195*^9},ExpressionUUID->"06768874-56ee-4c2d-b283-\
+1b544f1e3f22"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/1/ldet/c\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.719036889183586*^9},ExpressionUUID->"53a4524a-907e-44f4-8b3c-\
+f1b8e149b490"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036898347166*^9},ExpressionUUID->"8562bc4c-3dfc-4ae6-b81b-\
+c802e5df7df6"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/5/ldet/c\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.719036898382943*^9},ExpressionUUID->"1de992d6-d854-4cca-a659-\
+5fdf35a9eeb0"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719036945471301*^9},ExpressionUUID->"77a45d64-9df2-4da2-aa7e-\
+19b052590ee7"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/10/ldet/c\"\>"],\
+ "Print",
+ CellChangeTimes->{
+  3.719036945531698*^9},ExpressionUUID->"a88be8c0-a1d5-406d-a879-\
+d476575c7152"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037034992895*^9},ExpressionUUID->"37b20396-2330-4e22-8762-\
+604fa6bfa83a"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/15/ldet/c\"\>"],\
+ "Print",
+ CellChangeTimes->{
+  3.719037035061159*^9},ExpressionUUID->"fa9f6263-3de7-4714-b45c-\
+1f85e1f24bfe"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190371698007107`*^9},ExpressionUUID->"2d93db80-cb08-4851-a81e-\
+c60c4a7c6e93"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/20/ldet/c\"\>"],\
+ "Print",
+ CellChangeTimes->{
+  3.7190371699348497`*^9},ExpressionUUID->"d2d4a5f5-2eba-4fbf-9d76-\
+4a9141f27716"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190373574205017`*^9},ExpressionUUID->"09de14fe-aace-4099-bea2-\
+866827533354"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/25/ldet/c\"\>"],\
+ "Print",
+ CellChangeTimes->{
+  3.7190373575550823`*^9},ExpressionUUID->"857edab2-dfa4-4596-8134-\
+f1c1eec9839d"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037597775424*^9},ExpressionUUID->"14713389-c48f-4988-99a5-\
+5d8e025bb924"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/1/ldet/c\"\>"],\
+ "Print",
+ CellChangeTimes->{
+  3.719037597898094*^9},ExpressionUUID->"ad89b14a-1932-4c6e-b610-\
+c9f649adf58d"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037598288453*^9},ExpressionUUID->"2762e982-4262-4797-89d4-\
+2616be07905b"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/40/ldet/c\"\>"]\
+, "Print",
+ CellChangeTimes->{
+  3.7190375983023643`*^9},ExpressionUUID->"1dec31a7-edb6-4650-8212-\
+9a1a673c3aaa"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190376023795567`*^9},ExpressionUUID->"7f39d256-30f6-4308-aed8-\
+ab11a4bf8f1f"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/80/ldet/c\"\>"]\
+, "Print",
+ CellChangeTimes->{
+  3.719037602396817*^9},ExpressionUUID->"af0fa8d7-3f01-4aeb-8085-\
+e31fcd1724ad"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037610100075*^9},ExpressionUUID->"6b574dc0-228a-4d8b-822d-\
+bfdb8fd21826"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/120/ldet/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.7190376101195183`*^9},ExpressionUUID->"702eda08-7955-4d92-ba6c-\
+ea5ade235080"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037621590805*^9},ExpressionUUID->"9d637429-2111-4fc5-85fe-\
+4e2356cbf634"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/160/ldet/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.719037621640957*^9},ExpressionUUID->"8da21024-d4ee-441e-b57f-\
+212b9f9a404e"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190376369743032`*^9},ExpressionUUID->"d233e793-8aff-4e4b-88ff-\
+b563245c99d1"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/200/ldet/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.7190376370299387`*^9},ExpressionUUID->"ba030d75-a7ad-439e-ab26-\
+c8d5c1faa6bd"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190376559021387`*^9},ExpressionUUID->"fca75f8f-341f-4489-bddb-\
+d0f54a4ec01c"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/1/ldet/c\
+\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037655956259*^9},ExpressionUUID->"dc4f9b50-c4b5-49ba-9563-\
+3b9d9dae5b66"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037656305328*^9},ExpressionUUID->"6cf7cdc2-1c06-47a5-bc60-\
+759e4d7e2d26"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/40/ldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190376563193407`*^9},ExpressionUUID->"3ac8e737-17da-4c8a-bc79-\
+a8219f52b812"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190376593242292`*^9},ExpressionUUID->"207a1ed3-dcec-47f0-a30a-\
+f89d106276ab"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/80/ldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037659350172*^9},ExpressionUUID->"dc2f2acb-d5f9-4aa9-a3f4-\
+54f9e938bed4"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037665037459*^9},ExpressionUUID->"ff61be1b-484e-4f3f-8556-\
+c6052525c047"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/120/ldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037665051849*^9},ExpressionUUID->"1ece3d36-36c8-44eb-a0fc-\
+2cb36dbcc4a9"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037673469714*^9},ExpressionUUID->"cff84f5c-3122-4a0d-b934-\
+3e5f02adb239"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/160/ldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037673520321*^9},ExpressionUUID->"5d35b33f-b386-4d0f-931b-\
+d4729394e93b"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037684608056*^9},ExpressionUUID->"939d6b32-622c-4e75-ab9a-\
+dba53830f126"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/200/ldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190376846586123`*^9},ExpressionUUID->"984dedf1-7e6d-4089-9384-\
+7834948cd883"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037698680681*^9},ExpressionUUID->"4d451af1-cf9e-49d3-9f37-\
+b30d2688abf5"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/1/ldet/c\
+\"\>"], "Print",
+ CellChangeTimes->{
+  3.71903769873612*^9},ExpressionUUID->"febce90f-cfc5-44fa-8c24-263c8bfd1667"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037699054158*^9},ExpressionUUID->"d3e7ceeb-2624-44cf-be4d-\
+415dfb378cac"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/40/ldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190376990651703`*^9},ExpressionUUID->"5fcc2cd6-3473-46b0-badb-\
+e7d74683e7cc"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037708095983*^9},ExpressionUUID->"0cfadd53-9c70-420d-96c1-\
+e5b3462e58e5"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/80/ldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.71903770811108*^9},ExpressionUUID->"097d195e-f6de-47fd-90cb-1f56cec9c946"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190377261386757`*^9},ExpressionUUID->"bfa70377-6b20-404d-8e2a-\
+557eaa2463b8"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/120/ldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037726197638*^9},ExpressionUUID->"cf7540a4-603b-45ca-a557-\
+0d62a0cfe05e"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037752660128*^9},ExpressionUUID->"e07544eb-4721-4ffc-8990-\
+191cd708c154"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/160/ldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037752713179*^9},ExpressionUUID->"278d9a7c-07ae-402c-bd3d-\
+da0fe88cd2b5"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.71903778800919*^9},ExpressionUUID->"54b6dd10-e70f-4f78-af8d-2fe27323216c"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/200/ldet/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.71903778806378*^9},ExpressionUUID->"5ef5a8df-71a7-4c5d-a3f6-9ca514c1f856"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037832687797*^9},ExpressionUUID->"183af14e-de16-44e1-a7b9-\
+8a55811beaa1"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/1/ldet/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.71903783274014*^9},ExpressionUUID->"6e9b84e1-9eed-4a67-8f0b-d92333c95e4d"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037833646143*^9},ExpressionUUID->"87556a72-c604-4836-895d-\
+e578ca735136"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/2/ldet/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.7190378336976023`*^9},ExpressionUUID->"f0dda739-6537-4546-bd92-\
+0f04994445d8"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037835848708*^9},ExpressionUUID->"1d9a5ba1-df61-4df0-b8ae-\
+e0ac8ac100b0"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/3/ldet/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.719037835866066*^9},ExpressionUUID->"71953de9-29b0-4d31-8016-\
+9a32712b8b09"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037841991878*^9},ExpressionUUID->"b68f98d8-73d1-4203-852c-\
+c62ce0db73be"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/4/ldet/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.719037842007655*^9},ExpressionUUID->"02ea5200-bf6d-427f-8dd4-\
+ab480b489aa0"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719037850628882*^9},ExpressionUUID->"84ee9fc5-4be3-49a1-b8c7-\
+c0abbed18db9"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/5/ldet/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.719037850639814*^9},ExpressionUUID->"fbb959bb-2ebd-4c9e-a9c5-\
+8836dc0bb7f4"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190378617113657`*^9},ExpressionUUID->"2f324a2b-ea38-4426-93f2-\
+ef2f156f59e1"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/1/ldet/c\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719037861764377*^9},ExpressionUUID->"ec1b9bf5-462f-4c0d-8a18-\
+68352be859af"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190379482390842`*^9},ExpressionUUID->"53277014-a380-4bd4-893a-\
+7c12395348d3"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/2/ldet/c\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719037948344632*^9},ExpressionUUID->"93b617ba-d77c-44ae-a17a-\
+b3140e566ae3"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.71903817181573*^9},ExpressionUUID->"88dac333-f5c7-48f9-9c26-6374cb056ef4"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/3/ldet/c\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.7190381720261993`*^9},ExpressionUUID->"bf28c4d7-b6f4-4628-ab17-\
+e70385775ee4"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719038625332571*^9},ExpressionUUID->"8a33c280-86dd-4f8f-857b-\
+429513b0a0a3"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/1/det/c\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.719038625547164*^9},ExpressionUUID->"b86f4593-f410-4f76-b23a-\
+89264f4ce3db"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719038635196363*^9},ExpressionUUID->"9fd8eee5-10ae-4d9d-a7f8-\
+6fac3da3a00b"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/5/det/c\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.719038635260675*^9},ExpressionUUID->"7b56dc04-2dd7-499f-909f-\
+e31b875c9608"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719038685181432*^9},ExpressionUUID->"89409083-8db8-4dbd-beda-\
+96040edfd036"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/10/det/c\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.7190386852464533`*^9},ExpressionUUID->"2e5c8a15-eb07-4f76-a190-\
+204137160bae"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719038785587953*^9},ExpressionUUID->"78c8b294-9b12-4b39-a295-\
+6472d6d542e9"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/15/det/c\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.7190387856904373`*^9},ExpressionUUID->"b9d978b1-228b-4c9a-8438-\
+40c0b84d4074"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719038929383992*^9},ExpressionUUID->"8db32f49-a88e-4e68-9bfe-\
+680e95d5b7b4"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/20/det/c\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.719038929501547*^9},ExpressionUUID->"23ce98e4-cab6-413b-b47e-\
+d9599acd7763"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039128845276*^9},ExpressionUUID->"e9758238-4ff7-41f4-adc8-\
+f53a5770eea4"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcm/25/det/c\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.719039128984166*^9},ExpressionUUID->"e0c4caf4-0ced-42d3-935e-\
+3afdd9b551c2"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039367021268*^9},ExpressionUUID->"3b607318-63e2-4c93-bacc-\
+31d52d493140"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/1/det/c\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.719039367164678*^9},ExpressionUUID->"4f83d834-e0e6-4e37-bfda-\
+9841a226d477"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039367575164*^9},ExpressionUUID->"168f2a00-2a1f-453a-b844-\
+8c2eac87c5be"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/40/det/c\"\>"],\
+ "Print",
+ CellChangeTimes->{
+  3.719039367598133*^9},ExpressionUUID->"c6909ef6-035b-4c70-a810-\
+f50a883dec60"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039371489636*^9},ExpressionUUID->"040e2124-20e6-4b56-89f2-\
+795c4cb52276"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/80/det/c\"\>"],\
+ "Print",
+ CellChangeTimes->{
+  3.719039371503469*^9},ExpressionUUID->"a409235b-c2a3-4143-8f7f-\
+123a4f0b28cc"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039379246315*^9},ExpressionUUID->"4ac3a082-1286-49e7-b130-\
+f6b6163debc2"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/120/det/c\"\>"]\
+, "Print",
+ CellChangeTimes->{
+  3.719039379262218*^9},ExpressionUUID->"62e9b05b-85cf-45ed-90c9-\
+fe8f04e73014"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039390593511*^9},ExpressionUUID->"4c76a42a-8b45-4642-9843-\
+f5c3e74d73b0"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/160/det/c\"\>"]\
+, "Print",
+ CellChangeTimes->{
+  3.719039390608078*^9},ExpressionUUID->"e22198b4-5bc9-4a65-8d44-\
+e0d2091d761d"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190394054608593`*^9},ExpressionUUID->"56d0148a-f4b4-455a-a7f6-\
+58f2032d0815"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/200/det/c\"\>"]\
+, "Print",
+ CellChangeTimes->{
+  3.719039405517918*^9},ExpressionUUID->"da981381-5e10-4346-ae2b-\
+b5b5887df321"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039423984275*^9},ExpressionUUID->"3a32e49e-cd8d-4223-9a5b-\
+07c2fbdec9f1"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/1/det/c\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719039424041279*^9},ExpressionUUID->"c3d8aefc-912f-4d2f-99d4-\
+1ba3f98d6bca"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039424399242*^9},ExpressionUUID->"146db66b-3c7b-4474-b598-\
+b1b6ed7e8193"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/40/det/c\
+\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190394244159307`*^9},ExpressionUUID->"1d5325ce-1dc8-42fa-8bf6-\
+56b2068d08f9"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039427426453*^9},ExpressionUUID->"f02da28e-2d7c-459b-a3cf-\
+6637bff5ecf0"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/80/det/c\
+\"\>"], "Print",
+ CellChangeTimes->{
+  3.71903942743864*^9},ExpressionUUID->"689d671f-3950-4a5a-ac02-46e7ef01e926"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039433180703*^9},ExpressionUUID->"ebea0d24-856c-4ca9-8df4-\
+5ea290747304"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/120/det/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039433194676*^9},ExpressionUUID->"0ec58f13-24d9-42fe-a785-\
+02a7f967a59a"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190394416498117`*^9},ExpressionUUID->"646610d5-4ba2-4ce2-9ee9-\
+0775b989fd90"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/160/det/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190394417019777`*^9},ExpressionUUID->"70231499-12ee-45a0-aaac-\
+73ff4030401d"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190394529097967`*^9},ExpressionUUID->"38ec1a3a-ba2c-460a-a516-\
+0c407f0ac280"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/1/200/det/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039452960791*^9},ExpressionUUID->"76245078-d5ea-4d2d-b0d9-\
+b64ed60789d1"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039467072522*^9},ExpressionUUID->"3b78b6b3-d66d-4dcd-9b72-\
+b39cfa4e86ce"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/1/det/c\"\
+\>"], "Print",
+ CellChangeTimes->{
+  3.719039467127365*^9},ExpressionUUID->"aa16f33e-2038-458d-9464-\
+b14693f21a86"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190394674418497`*^9},ExpressionUUID->"9f6b1fae-dad3-4e67-9540-\
+e9ce511908df"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/40/det/c\
+\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039467453473*^9},ExpressionUUID->"15d57717-1ea9-4ed2-952d-\
+c31555087b0a"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190394764005117`*^9},ExpressionUUID->"f0d0e4f9-43b8-4830-bfe7-\
+6e399d2e390a"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/80/det/c\
+\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190394764121733`*^9},ExpressionUUID->"8734b99f-6607-4de3-8615-\
+e1b0af2b58c6"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039493801556*^9},ExpressionUUID->"bc269209-f42e-46a0-8da6-\
+795869cfc1f2"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/120/det/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190394938550787`*^9},ExpressionUUID->"6aa62e61-9ea9-4943-94b7-\
+075e6610f03e"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.71903952027213*^9},ExpressionUUID->"4628ab00-5d8e-40dd-acd2-ccf60becc14d"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/160/det/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039520323544*^9},ExpressionUUID->"17337268-cfb6-4e48-b911-\
+c1e17e7af462"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039555508521*^9},ExpressionUUID->"402c816c-b51d-4e75-89ad-\
+12fd4589e87d"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_rec/2/200/det/\
+c\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039555564406*^9},ExpressionUUID->"6beea76c-3b95-49c0-9db0-\
+7bf49f97a313"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190395994533777`*^9},ExpressionUUID->"20554885-a2fb-4e49-982e-\
+ca505d9fe568"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/1/det/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.719039599514586*^9},ExpressionUUID->"9195a686-63bf-44ad-a745-\
+e8ee81378b41"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039600434712*^9},ExpressionUUID->"4ea196ef-50f6-4bd9-9911-\
+da94d71bc5b5"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/2/det/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.719039600494923*^9},ExpressionUUID->"5a474013-4b2a-49a6-b91d-\
+db9edba363ae"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039602639234*^9},ExpressionUUID->"ced74320-9f68-44e4-9a13-\
+70697dc49887"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/3/det/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.7190396026509943`*^9},ExpressionUUID->"ff2d23e4-81b6-457a-a810-\
+3cbf01ec8069"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039608720402*^9},ExpressionUUID->"c1620896-22f0-4600-88d5-\
+2e6d5618e74f"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/4/det/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.719039608734282*^9},ExpressionUUID->"be3eb3c0-83b2-4c54-9850-\
+e48618c34cb4"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.7190396172339067`*^9},ExpressionUUID->"682e3af2-b3b4-4c07-ad74-\
+d8df5e252084"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/5/det/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.7190396172448587`*^9},ExpressionUUID->"11b34207-a670-4121-9d37-\
+d5798130c496"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039628132063*^9},ExpressionUUID->"08c108bd-8bd3-40fa-b012-\
+dd2e53395958"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/1/det/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.71903962818585*^9},ExpressionUUID->"49b70c5a-cef0-4b04-9e99-2f24f4d6a52a"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039716628025*^9},ExpressionUUID->"9cb8a62a-4edf-40fd-8adc-\
+c948a8fa59fc"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/2/det/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.719039716727605*^9},ExpressionUUID->"2d93c109-fc2c-4529-92bd-\
+f0171e9cf382"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719039945946542*^9},ExpressionUUID->"20ebeac2-67f1-497c-b811-\
+514f435d66e5"],
+
+Cell[BoxData["\<\"Test-case: \
+/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/3/det/c\"\>\
+"], "Print",
+ CellChangeTimes->{
+  3.719039946172271*^9},ExpressionUUID->"06547240-2cad-445d-85b6-\
+af8c571d8ab3"],
+
+Cell[BoxData["\<\"PASSED\"\>"], "Print",
+ CellChangeTimes->{
+  3.719040366262705*^9},ExpressionUUID->"e65a3b27-0ea1-4bad-be0c-\
+0b690ad10585"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{
+  3.7165497928629713`*^9},ExpressionUUID->"4cc7031b-fd68-43e8-aa6e-\
+bca09df58c38"]
+},
+WindowSize->{1330, 693},
+WindowMargins->{{Automatic, 17}, {59, Automatic}},
+FrontEndVersion->"11.1 for Mac OS X x86 (32-bit, 64-bit Kernel) (April 27, \
+2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 195, 3, 66, "Text", "ExpressionUUID" -> \
+"3546ffb9-59d3-49cb-b497-f272f24b9d77"],
+Cell[756, 25, 878, 25, 154, "Input", "ExpressionUUID" -> \
+"c3ade20a-50ee-4be6-badd-5ee3ecb71a4a",
+ InitializationCell->True],
+Cell[1637, 52, 224, 4, 66, "Text", "ExpressionUUID" -> \
+"9f85a3f6-4d65-45cc-b4bc-10cb965b6a87"],
+Cell[1864, 58, 19489, 394, 1729, "Input", "ExpressionUUID" -> \
+"2ca0ca70-7416-4eb4-bfd8-20d0c132bf7e",
+ InitializationCell->True],
+Cell[21356, 454, 187, 3, 66, "Text", "ExpressionUUID" -> \
+"2d26e505-da9b-4fad-982b-a32851812e20"],
+Cell[CellGroupData[{
+Cell[21568, 461, 398, 9, 32, "Input", "ExpressionUUID" -> \
+"3909951c-4158-40ff-afce-77124a1a8598"],
+Cell[CellGroupData[{
+Cell[21991, 474, 250, 5, 24, "Print", "ExpressionUUID" -> \
+"38a6d438-a7c3-43bf-8504-474127c242fc"],
+Cell[22244, 481, 166, 3, 24, "Print", "ExpressionUUID" -> \
+"8c580e5c-1d45-4413-9b8e-158efe2fd5b1"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22459, 490, 53860, 1118, 4359, "Input", "ExpressionUUID" -> \
+"4d263be4-d8ae-47ab-99a1-24ea22840402"],
+Cell[CellGroupData[{
+Cell[76344, 1612, 225, 5, 24, "Print", "ExpressionUUID" -> \
+"a46564bd-5810-4297-be98-f4675648a4df"],
+Cell[76572, 1619, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"a314e530-c16e-4365-a747-750c1963293f"],
+Cell[76717, 1624, 226, 5, 24, "Print", "ExpressionUUID" -> \
+"34617d67-f053-46a1-b0dd-d92d6aaeb74d"],
+Cell[76946, 1631, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"4a29be64-6957-49b4-b642-fbce784f0661"],
+Cell[77091, 1636, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"7508b7f9-723f-4ec4-a8fc-402ff615dc2b"],
+Cell[77325, 1643, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"17355ddd-e6ce-472b-8c79-523bd274137f"],
+Cell[77470, 1648, 232, 5, 24, "Print", "ExpressionUUID" -> \
+"a881ae9e-fda2-4cad-8a8d-5981aefa77a7"],
+Cell[77705, 1655, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"603971e3-3f5d-4320-81f3-233c9a19c3c0"],
+Cell[77850, 1660, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"c95537d7-fca8-4d15-b5cd-618246f75046"],
+Cell[78084, 1667, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"2a1c9b40-031b-43c1-a9a7-e2a579dbaa97"],
+Cell[78229, 1672, 232, 5, 24, "Print", "ExpressionUUID" -> \
+"cb98cc39-af18-477f-9065-cd58e06cdf26"],
+Cell[78464, 1679, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"b891ab69-d6e5-454d-b58c-5dc17268e148"],
+Cell[78611, 1684, 228, 5, 24, "Print", "ExpressionUUID" -> \
+"b5d0aa64-92e3-4702-838b-32a3b9bd77a2"],
+Cell[78842, 1691, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"864ffc08-2852-450f-b825-8acff71c1dda"],
+Cell[78987, 1696, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"c4a04261-5130-4f90-a4c3-572157cdec07"],
+Cell[79220, 1703, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"1a2ca7ca-d1df-44c9-81a4-bcdf1550ce28"],
+Cell[79365, 1708, 225, 4, 24, "Print", "ExpressionUUID" -> \
+"7efe2041-ace7-4d44-ae6d-4c96ceee5702"],
+Cell[79593, 1714, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"1f4f60b1-13af-47e9-a02d-86a9fe3e4b9d"],
+Cell[79738, 1719, 229, 5, 24, "Print", "ExpressionUUID" -> \
+"de66d7e3-1fb6-4615-b47c-91fe7399377d"],
+Cell[79970, 1726, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"f48f363e-fd6d-46cb-9d72-524e50e302ba"],
+Cell[80115, 1731, 227, 5, 24, "Print", "ExpressionUUID" -> \
+"8c08b121-ee89-4056-8be8-75c6950f2a6b"],
+Cell[80345, 1738, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"3321d5ca-8c7b-48fc-807e-226daf2094bb"],
+Cell[80492, 1743, 227, 5, 24, "Print", "ExpressionUUID" -> \
+"9eb30550-15ef-4d80-859f-5bc30a5587d0"],
+Cell[80722, 1750, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"adf7b766-2260-46fb-91da-7453f7c2c6db"],
+Cell[80869, 1755, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"8121cf94-5b33-4942-866b-9d1badce6850"],
+Cell[81102, 1762, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"28d067df-5613-487c-9ac4-2e09b11e689f"],
+Cell[81247, 1767, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"23225303-9bfa-459b-8a71-19a84071f816"],
+Cell[81480, 1774, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"e49f18ba-df9c-4428-8fe3-fdf03310aaf6"],
+Cell[81625, 1779, 228, 5, 24, "Print", "ExpressionUUID" -> \
+"8be05fe2-5d81-4a4f-a290-e73a278c0ff5"],
+Cell[81856, 1786, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"fe27690b-52b7-4f25-8a29-f4bafbe42cdb"],
+Cell[82001, 1791, 228, 5, 24, "Print", "ExpressionUUID" -> \
+"c9739676-f59b-4363-9092-0528b85059a9"],
+Cell[82232, 1798, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"530f4c8a-3c98-46a7-ba43-bcef78bbff84"],
+Cell[82377, 1803, 228, 5, 24, "Print", "ExpressionUUID" -> \
+"90c6e409-85f4-49dd-9c01-a51455115134"],
+Cell[82608, 1810, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"a798fac1-55b7-4e8e-9e83-2ed4552e6a93"],
+Cell[82753, 1815, 229, 5, 24, "Print", "ExpressionUUID" -> \
+"88b1a1e1-dda1-418b-ae3d-09a24d0cd4f5"],
+Cell[82985, 1822, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"bee87a93-c5d8-4552-982a-3f2907a95882"],
+Cell[83130, 1827, 226, 4, 24, "Print", "ExpressionUUID" -> \
+"5174ffb7-4680-43c1-8ccb-16dbfecdbaf6"],
+Cell[83359, 1833, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"34da95af-38c4-4c8c-841a-df8be5683dae"],
+Cell[83504, 1838, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"6fed3fc7-2aab-4f67-8719-953bd548b4d4"],
+Cell[83737, 1845, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"98aa4fbe-3419-4a8f-bd2f-3a5a57f3c5cf"],
+Cell[83882, 1850, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"0ab453cb-a758-4053-a0ae-40e8ff0930a2"],
+Cell[84115, 1857, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"7361ba1a-2a76-4d6a-b8ee-54a19e5142a4"],
+Cell[84260, 1862, 232, 5, 24, "Print", "ExpressionUUID" -> \
+"13cc9a89-5a05-4fb4-a3ca-bcdca43097dc"],
+Cell[84495, 1869, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"e68e994c-913f-4849-988c-06e2144d837b"],
+Cell[84642, 1874, 234, 5, 24, "Print", "ExpressionUUID" -> \
+"d2dcabf3-59e4-4c7b-a6eb-d81e61a63150"],
+Cell[84879, 1881, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"7f471de4-2189-450f-9e37-744cb90dc6d0"],
+Cell[85024, 1886, 235, 5, 24, "Print", "ExpressionUUID" -> \
+"beda8e38-7d6c-473b-ac2b-d518dc945425"],
+Cell[85262, 1893, 139, 2, 24, "Print", "ExpressionUUID" -> \
+"4e5e80a5-678a-4af3-93c5-6b00b06003df"],
+Cell[85404, 1897, 237, 5, 24, "Print", "ExpressionUUID" -> \
+"b79b1504-e37a-45a5-9cbb-6fe2f2045fe8"],
+Cell[85644, 1904, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"38d7d667-a793-4199-bc9f-908757ca349d"],
+Cell[85789, 1909, 236, 5, 24, "Print", "ExpressionUUID" -> \
+"ed5497a2-2585-4aaa-9b6f-6e01d5c2405d"],
+Cell[86028, 1916, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"be7b5b8c-44ea-40e4-9a58-1fbad3f85328"],
+Cell[86173, 1921, 238, 5, 24, "Print", "ExpressionUUID" -> \
+"80af22bc-1876-4e19-8fa8-92a39ba4a02c"],
+Cell[86414, 1928, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"3483b9da-305b-4433-9ebd-5711c918d98e"],
+Cell[86561, 1933, 236, 5, 24, "Print", "ExpressionUUID" -> \
+"1b24c27f-012e-4a5b-911d-17e80f864751"],
+Cell[86800, 1940, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"508849f1-c0ff-44bf-bef2-dd68fcef6ed7"],
+Cell[86945, 1945, 234, 5, 24, "Print", "ExpressionUUID" -> \
+"aaa3284a-2489-48f5-8f63-1d67eb464fc7"],
+Cell[87182, 1952, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"e0c728e1-bc8c-42aa-affb-486924750e94"],
+Cell[87327, 1957, 237, 5, 24, "Print", "ExpressionUUID" -> \
+"73b195b3-1042-4db9-adbe-05291f874089"],
+Cell[87567, 1964, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"2e323c1e-c7a4-40a2-90fa-a60475eb43cc"],
+Cell[87714, 1969, 235, 5, 24, "Print", "ExpressionUUID" -> \
+"2014de9a-1cc1-4b66-be45-74cdc4bb86e9"],
+Cell[87952, 1976, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"59a2837e-224e-488b-bf98-23aee91e00e9"],
+Cell[88099, 1981, 236, 5, 24, "Print", "ExpressionUUID" -> \
+"70484a70-3bd7-40c1-b91a-c445e01ff11d"],
+Cell[88338, 1988, 139, 2, 24, "Print", "ExpressionUUID" -> \
+"38502b6c-49bc-4b95-a7c4-bd36148897db"],
+Cell[88480, 1992, 238, 5, 24, "Print", "ExpressionUUID" -> \
+"3962630b-dfb5-4d7a-92e9-1d9774121bf1"],
+Cell[88721, 1999, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"5c3743f7-0284-41da-bdbc-3c2dd364dba9"],
+Cell[88866, 2004, 236, 5, 24, "Print", "ExpressionUUID" -> \
+"eaec81c1-f9f3-4a5a-845b-eab4d5c841f9"],
+Cell[89105, 2011, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"de15f772-c58c-4344-a9c0-a1081a2af89c"],
+Cell[89250, 2016, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"b0e934d1-82b4-4550-aa3e-ae118eac883b"],
+Cell[89484, 2023, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"4b81ca42-0f63-49bf-bb51-74797e792563"],
+Cell[89629, 2028, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"e1d1dd0c-1e9a-45cf-b0a4-5c58109443cf"],
+Cell[89863, 2035, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"28d99e14-33c0-42e9-adce-9e62c9077253"],
+Cell[90010, 2040, 228, 4, 24, "Print", "ExpressionUUID" -> \
+"6a36d4c5-41a2-414f-9f16-e18db42c9666"],
+Cell[90241, 2046, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"be63e4cb-15e6-488f-bf29-28d6cda9f3a8"],
+Cell[90386, 2051, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"b408e3ac-11f1-4075-a898-c8d66832a0dc"],
+Cell[90620, 2058, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"881f0366-c19f-4b31-afc4-97b2f0511dbc"],
+Cell[90767, 2063, 233, 5, 24, "Print", "ExpressionUUID" -> \
+"d69745f9-c2c6-4b12-8d5b-7d6ec1ee2a8b"],
+Cell[91003, 2070, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"3faaab54-7486-4811-aadf-f7ebfe3a7b78"],
+Cell[91148, 2075, 232, 5, 24, "Print", "ExpressionUUID" -> \
+"553e8128-830f-4fd9-aaa5-87a627e5701e"],
+Cell[91383, 2082, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"af697856-ae3b-46a5-ae0a-9fb6bc2bb521"],
+Cell[91528, 2087, 234, 5, 24, "Print", "ExpressionUUID" -> \
+"e74a8100-0c1c-4efd-95a4-520fc898a627"],
+Cell[91765, 2094, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"17a1bfe5-ef55-49fe-9918-105f50ea66ff"],
+Cell[91910, 2099, 232, 5, 24, "Print", "ExpressionUUID" -> \
+"b3ba8740-0d23-4d47-a9bf-6cf2d92ab86e"],
+Cell[92145, 2106, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"a3c025ca-6cf6-4c11-9202-bfd3d117390d"],
+Cell[92290, 2111, 222, 5, 24, "Print", "ExpressionUUID" -> \
+"5a402c24-59ac-45c3-ac5a-1675d7398e99"],
+Cell[92515, 2118, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"d29fcdc0-652a-451a-9314-5adc95ca4c54"],
+Cell[92660, 2123, 224, 5, 24, "Print", "ExpressionUUID" -> \
+"82168fa9-0826-4328-9142-0db82256dfb0"],
+Cell[92887, 2130, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"07bcf142-27b2-4ea0-80f9-371703bf5da6"],
+Cell[93032, 2135, 225, 5, 24, "Print", "ExpressionUUID" -> \
+"cbe81254-41ab-4012-9380-4e71055875f0"],
+Cell[93260, 2142, 139, 2, 24, "Print", "ExpressionUUID" -> \
+"2a1693ff-39cd-4716-bc56-d6c4b02b7c7f"],
+Cell[93402, 2146, 223, 5, 24, "Print", "ExpressionUUID" -> \
+"1da4a6db-bb0c-435d-9d52-c020e0728318"],
+Cell[93628, 2153, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"24ebe877-f6e7-4e60-9a69-b5ea3aec7c9c"],
+Cell[93773, 2158, 225, 5, 24, "Print", "ExpressionUUID" -> \
+"db6e76fa-faae-4fe9-86d6-c4e6465ae689"],
+Cell[94001, 2165, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"64243a23-919d-48ba-9191-5925234cb749"],
+Cell[94148, 2170, 225, 5, 24, "Print", "ExpressionUUID" -> \
+"03e73cf9-3c3c-47c0-ac86-23965cc43dd8"],
+Cell[94376, 2177, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"bd279704-d9af-4d22-a167-759e121fd011"],
+Cell[94521, 2182, 223, 5, 24, "Print", "ExpressionUUID" -> \
+"eb03b39a-a900-47ca-897d-d0257631cdd3"],
+Cell[94747, 2189, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"95840d45-1ccb-4655-af7f-97c0d4ea71f5"],
+Cell[94894, 2194, 221, 4, 24, "Print", "ExpressionUUID" -> \
+"6e1bde7f-41e6-4fef-9495-468873741ee9"],
+Cell[95118, 2200, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"9a4a78df-0b69-4299-8ade-3bd2891c0883"],
+Cell[95265, 2205, 224, 5, 24, "Print", "ExpressionUUID" -> \
+"f8055410-f728-4538-ac89-c9ad75b15e5a"],
+Cell[95492, 2212, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"34761e40-8d35-4860-9524-b451bf33a605"],
+Cell[95637, 2217, 225, 5, 24, "Print", "ExpressionUUID" -> \
+"455c4418-8239-400b-a77d-6f7789472ca5"],
+Cell[95865, 2224, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"b48f5269-174b-48af-98ac-f8211f3efbbb"],
+Cell[96010, 2229, 225, 5, 24, "Print", "ExpressionUUID" -> \
+"353fcf81-022b-43eb-9225-444003c2672b"],
+Cell[96238, 2236, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"f96c8f94-d6be-425d-8e0c-bf8ed7c975d9"],
+Cell[96383, 2241, 222, 4, 24, "Print", "ExpressionUUID" -> \
+"cee45654-80cc-4bf0-a1e2-929829eb4963"],
+Cell[96608, 2247, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"c004ef68-c6de-4ac6-930d-b22b029f1ce8"],
+Cell[96753, 2252, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"d9146076-6105-4c55-9f86-5e3b7cd31d6c"],
+Cell[96987, 2259, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"73adb543-d609-4eb3-8708-7ae3cf365f55"],
+Cell[97132, 2264, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"b2eb7a0e-7284-4465-84bb-2f3c95a3285c"],
+Cell[97365, 2271, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"7a453bff-536b-40cc-a77c-61af8d9f20a1"],
+Cell[97510, 2276, 232, 5, 24, "Print", "ExpressionUUID" -> \
+"432fedfb-1914-421a-9bda-1150eac89815"],
+Cell[97745, 2283, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"0b07a2d7-36c7-480c-a765-d6a4fddaa3ab"],
+Cell[97890, 2288, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"05965bb8-2382-4d04-a9cd-07f54a4fea93"],
+Cell[98124, 2295, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"8fe14cb7-fac7-4a6c-a5a3-6c8e9583d67b"],
+Cell[98269, 2300, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"503262e9-cf14-4c91-92ac-35ef551e778c"],
+Cell[98503, 2307, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"21d5327c-1bb3-4c80-9d71-7d4771ea3b8d"],
+Cell[98648, 2312, 233, 5, 24, "Print", "ExpressionUUID" -> \
+"e1cb5c1c-dbaa-4dda-b3d8-de2293a0a6c3"],
+Cell[98884, 2319, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"500d8876-6480-4bed-b88d-e5a73dd3fee6"],
+Cell[99029, 2324, 229, 5, 24, "Print", "ExpressionUUID" -> \
+"f5bf34b5-7f37-4c5c-a132-0d84b23e7e36"],
+Cell[99261, 2331, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"0785c2f2-6bd5-4555-82a0-ce13e9a40692"],
+Cell[99406, 2336, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"ec326441-c268-496f-a228-52e25f918e5c"],
+Cell[99639, 2343, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"30524b4a-eded-4d18-9ce2-7cd772fe1266"],
+Cell[99784, 2348, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"94c98115-eb57-4f73-8a3b-600fa3dd60d2"],
+Cell[100017, 2355, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"92e240ab-fc5b-4999-b281-33179c4df68c"],
+Cell[100164, 2360, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"87b7ca1d-e0a0-41a2-850a-0a815fc0aaa3"],
+Cell[100398, 2367, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"3313a5e5-6405-4301-8670-d15db4d2276b"],
+Cell[100543, 2372, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"b6e43ab4-3f67-4300-8c47-a45436a681da"],
+Cell[100777, 2379, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"b98e00ab-2a71-484a-9695-6a5f1ab2b9c5"],
+Cell[100922, 2384, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"2dde647f-207e-4a2a-811d-99b67e44d94f"],
+Cell[101156, 2391, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"ab9dccd8-6175-4edc-8e54-31009822caae"],
+Cell[101301, 2396, 226, 5, 24, "Print", "ExpressionUUID" -> \
+"1fee43e9-01ac-4278-af52-62d590b167bc"],
+Cell[101530, 2403, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"198378a9-10a7-4af1-a106-aa1f3416b6a7"],
+Cell[101675, 2408, 223, 4, 24, "Print", "ExpressionUUID" -> \
+"d4e0e9a8-5d15-4297-a7c3-368976503ed0"],
+Cell[101901, 2414, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"2ccf475f-9412-4927-9491-25fe5483f572"],
+Cell[102046, 2419, 226, 5, 24, "Print", "ExpressionUUID" -> \
+"5880c7d9-0291-4adb-aa0a-1e8381a47db8"],
+Cell[102275, 2426, 139, 2, 24, "Print", "ExpressionUUID" -> \
+"5e7d19b6-b0d1-4898-ab59-718508a2ef42"],
+Cell[102417, 2430, 226, 5, 24, "Print", "ExpressionUUID" -> \
+"44ed21f3-d07f-4058-ae8a-1b2de3995645"],
+Cell[102646, 2437, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"68eac208-1a04-4f77-8ed3-9b1576f95cb2"],
+Cell[102791, 2442, 226, 5, 24, "Print", "ExpressionUUID" -> \
+"c6ab017a-c7c3-44d2-a365-14a82238a9be"],
+Cell[103020, 2449, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"027a13ac-b275-49b9-a1a9-a051e631301b"],
+Cell[103165, 2454, 227, 5, 24, "Print", "ExpressionUUID" -> \
+"9d899131-4104-47c8-950c-3a1d28a6ffea"],
+Cell[103395, 2461, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"a0874c5e-c237-4086-97c6-7f7456fef356"],
+Cell[103540, 2466, 227, 5, 24, "Print", "ExpressionUUID" -> \
+"d63c86b1-151f-41e1-b46a-b92582005cb2"],
+Cell[103770, 2473, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"0aeee12e-13a8-478d-b303-44a79fd412e5"],
+Cell[103915, 2478, 227, 5, 24, "Print", "ExpressionUUID" -> \
+"04c93585-5dbe-4a79-a68a-76f600469844"],
+Cell[104145, 2485, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"c0d00c5d-1f0b-4c07-b6ea-734f33d9ae68"],
+Cell[104290, 2490, 226, 5, 24, "Print", "ExpressionUUID" -> \
+"dea2c459-e6ed-42f0-acc7-6b7fd7a19d72"],
+Cell[104519, 2497, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"d005c821-1f16-42e7-8c79-5041774f6302"],
+Cell[104664, 2502, 226, 5, 24, "Print", "ExpressionUUID" -> \
+"7b7ac1ed-1db1-4e06-b810-1406ccdc0d78"],
+Cell[104893, 2509, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"f688d1cf-bd74-4d1d-a632-7876f071c2a8"],
+Cell[105038, 2514, 227, 5, 24, "Print", "ExpressionUUID" -> \
+"592100b2-2653-47f0-9169-864f1db7e284"],
+Cell[105268, 2521, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"539e6d2e-97da-4018-a276-682faff89eaa"],
+Cell[105413, 2526, 227, 5, 24, "Print", "ExpressionUUID" -> \
+"cb6b3d34-3244-49fe-b873-d6878592b293"],
+Cell[105643, 2533, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"3840eb37-85da-44f0-9fc6-215d1aa7e785"],
+Cell[105790, 2538, 227, 5, 24, "Print", "ExpressionUUID" -> \
+"91ac24bf-57b2-4f5c-9872-dc4a1be4cd5a"],
+Cell[106020, 2545, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"1c7f6fbd-55d0-47c9-8dd0-7cbc85628e48"],
+Cell[106165, 2550, 227, 5, 24, "Print", "ExpressionUUID" -> \
+"2e59d11f-4204-42d4-80a2-3e25b73b256a"],
+Cell[106395, 2557, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"7b5621c1-2d5c-4942-8e1f-38ba7444fb43"],
+Cell[106542, 2562, 229, 5, 24, "Print", "ExpressionUUID" -> \
+"5f952c4b-ab31-4581-a95c-08ccddd72f61"],
+Cell[106774, 2569, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"902c89c4-b3a2-4d75-afb1-1eb63057c92f"],
+Cell[106921, 2574, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"8868fc51-df29-475e-81b5-92c294961069"],
+Cell[107154, 2581, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"64412e0e-fc3e-48e0-8f23-f39849cb4e97"],
+Cell[107299, 2586, 228, 5, 24, "Print", "ExpressionUUID" -> \
+"9608c2cb-dda1-4147-9b86-8e4f0acf4643"],
+Cell[107530, 2593, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"b86b85f3-7233-44c0-9af9-c2bc315c930a"],
+Cell[107675, 2598, 229, 5, 24, "Print", "ExpressionUUID" -> \
+"2e80852b-663a-42a0-be32-9936827dc312"],
+Cell[107907, 2605, 139, 2, 24, "Print", "ExpressionUUID" -> \
+"134aafe5-b6c2-4c2a-b0ea-cafd6f90418e"],
+Cell[108049, 2609, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"b640cd12-3610-4a44-a42f-365d7a3b6769"],
+Cell[108283, 2616, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"8b3284e0-2334-4a0a-80db-f133ad03d740"],
+Cell[108430, 2621, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"e29b924a-78e6-44d1-a95d-575ff84458cc"],
+Cell[108664, 2628, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"7257c962-e5c7-43f4-9fb7-0051cd136c97"],
+Cell[108809, 2633, 235, 5, 24, "Print", "ExpressionUUID" -> \
+"7b4228f5-c617-46b1-88f6-c8249660756b"],
+Cell[109047, 2640, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"0ef48dd9-e13e-4f93-b656-82a62bd96f2a"],
+Cell[109194, 2645, 236, 5, 24, "Print", "ExpressionUUID" -> \
+"c20238d8-9516-43e7-975f-f6f3396456ab"],
+Cell[109433, 2652, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"14ff90c1-0735-419c-a10b-fdea3d192569"],
+Cell[109578, 2657, 236, 5, 24, "Print", "ExpressionUUID" -> \
+"4bc2c6ce-ff79-4318-b846-505779707bae"],
+Cell[109817, 2664, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"72f707aa-2d2a-4467-9117-b3404618784f"],
+Cell[109962, 2669, 235, 5, 24, "Print", "ExpressionUUID" -> \
+"c5737942-f3f3-433b-ae94-515fc0da30ad"],
+Cell[110200, 2676, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"796de8db-fd95-41cd-84b9-7b845485589d"],
+Cell[110347, 2681, 237, 5, 24, "Print", "ExpressionUUID" -> \
+"395d5094-b2a5-4be2-9462-ddba4cdef6e8"],
+Cell[110587, 2688, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"8d704ffb-760e-4a3f-9465-2549b2f1b89d"],
+Cell[110732, 2693, 237, 5, 24, "Print", "ExpressionUUID" -> \
+"ccfdef77-e5a7-4070-a5fb-a157cd0dec48"],
+Cell[110972, 2700, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"daa5d773-9eee-4ee1-a21f-957b3169a5cb"],
+Cell[111117, 2705, 233, 5, 24, "Print", "ExpressionUUID" -> \
+"16eff989-18c3-494d-896f-2f677e8e91d4"],
+Cell[111353, 2712, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"25bc74a9-a54f-4898-ab22-2ae3a4c5b9bc"],
+Cell[111498, 2717, 234, 5, 24, "Print", "ExpressionUUID" -> \
+"149287c0-c93a-40a1-84b2-63fe799ae953"],
+Cell[111735, 2724, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"49867d85-bcbd-4165-ac93-0526c4e66dce"],
+Cell[111882, 2729, 234, 5, 24, "Print", "ExpressionUUID" -> \
+"b5a37aa5-5c0a-49c6-a9c5-b36c4873dada"],
+Cell[112119, 2736, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"6bb0d319-e81c-4ae0-b6cf-e51da3077c7e"],
+Cell[112264, 2741, 235, 5, 24, "Print", "ExpressionUUID" -> \
+"32fef52f-e755-4fc5-a726-e15019038531"],
+Cell[112502, 2748, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"90733939-af27-4cb4-83bf-d121805f489b"],
+Cell[112649, 2753, 237, 5, 24, "Print", "ExpressionUUID" -> \
+"910136a4-5b0f-42f7-8435-e36b0a840529"],
+Cell[112889, 2760, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"2163bb9b-c743-4b6b-acb0-b1630f6a6256"],
+Cell[113034, 2765, 235, 5, 24, "Print", "ExpressionUUID" -> \
+"387c0ba4-cd07-481c-bcb7-1420247ec726"],
+Cell[113272, 2772, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"edef2970-2cf5-491a-967f-5bd942838a0a"],
+Cell[113419, 2777, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"6a6bf85f-263e-486d-84e0-36d39121b1c2"],
+Cell[113652, 2784, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"7195801d-c6f9-4235-8a77-b3789b8b0b2c"],
+Cell[113797, 2789, 227, 4, 24, "Print", "ExpressionUUID" -> \
+"0cbc58e6-f323-4d9b-b62e-67b3fa01d1fe"],
+Cell[114027, 2795, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"f8cc9454-4a30-49eb-9625-e5ab76f271a3"],
+Cell[114172, 2800, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"b23e8366-150d-4e6e-98b4-d579ffc8a2c9"],
+Cell[114405, 2807, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"7046c5af-2ebc-4fd7-8fb7-a60144e3c24a"],
+Cell[114552, 2812, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"6c88a43f-e085-4254-9049-60205b5b8728"],
+Cell[114785, 2819, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"6a3b5330-3c7d-4892-a748-7404de8e6960"],
+Cell[114930, 2824, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"5a557862-7876-4afe-b88f-2d0d79f56259"],
+Cell[115163, 2831, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"9b7328b9-674c-4018-a630-aea7bb522f28"],
+Cell[115308, 2836, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"63cf1254-fc56-429a-a11d-455d20b7819d"],
+Cell[115542, 2843, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"df416bb6-f260-4378-b9bd-a19d05c6a294"],
+Cell[115687, 2848, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"330b4a0d-ae8b-4242-bb1e-1de820ba6e1e"],
+Cell[115921, 2855, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"d986ff8d-c482-4de8-add2-4f736d6242e3"],
+Cell[116066, 2860, 233, 5, 24, "Print", "ExpressionUUID" -> \
+"c0970bf7-3c56-40d9-b0ec-3f526bf8e210"],
+Cell[116302, 2867, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"06768874-56ee-4c2d-b283-1b544f1e3f22"],
+Cell[116447, 2872, 221, 5, 24, "Print", "ExpressionUUID" -> \
+"53a4524a-907e-44f4-8b3c-f1b8e149b490"],
+Cell[116671, 2879, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"8562bc4c-3dfc-4ae6-b81b-c802e5df7df6"],
+Cell[116816, 2884, 221, 5, 24, "Print", "ExpressionUUID" -> \
+"1de992d6-d854-4cca-a659-5fdf35a9eeb0"],
+Cell[117040, 2891, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"77a45d64-9df2-4da2-aa7e-19b052590ee7"],
+Cell[117185, 2896, 222, 5, 24, "Print", "ExpressionUUID" -> \
+"a88be8c0-a1d5-406d-a879-d476575c7152"],
+Cell[117410, 2903, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"37b20396-2330-4e22-8762-604fa6bfa83a"],
+Cell[117555, 2908, 222, 5, 24, "Print", "ExpressionUUID" -> \
+"fa9f6263-3de7-4714-b45c-1f85e1f24bfe"],
+Cell[117780, 2915, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"2d93db80-cb08-4851-a81e-c60c4a7c6e93"],
+Cell[117927, 2920, 224, 5, 24, "Print", "ExpressionUUID" -> \
+"d2d4a5f5-2eba-4fbf-9d76-4a9141f27716"],
+Cell[118154, 2927, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"09de14fe-aace-4099-bea2-866827533354"],
+Cell[118301, 2932, 224, 5, 24, "Print", "ExpressionUUID" -> \
+"857edab2-dfa4-4596-8134-f1c1eec9839d"],
+Cell[118528, 2939, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"14713389-c48f-4988-99a5-5d8e025bb924"],
+Cell[118673, 2944, 222, 5, 24, "Print", "ExpressionUUID" -> \
+"ad89b14a-1932-4c6e-b610-c9f649adf58d"],
+Cell[118898, 2951, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"2762e982-4262-4797-89d4-2616be07905b"],
+Cell[119043, 2956, 225, 5, 24, "Print", "ExpressionUUID" -> \
+"1dec31a7-edb6-4650-8212-9a1a673c3aaa"],
+Cell[119271, 2963, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"7f39d256-30f6-4308-aed8-ab11a4bf8f1f"],
+Cell[119418, 2968, 223, 5, 24, "Print", "ExpressionUUID" -> \
+"af0fa8d7-3f01-4aeb-8085-e31fcd1724ad"],
+Cell[119644, 2975, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"6b574dc0-228a-4d8b-822d-bfdb8fd21826"],
+Cell[119789, 2980, 226, 5, 24, "Print", "ExpressionUUID" -> \
+"702eda08-7955-4d92-ba6c-ea5ade235080"],
+Cell[120018, 2987, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"9d637429-2111-4fc5-85fe-4e2356cbf634"],
+Cell[120163, 2992, 224, 5, 24, "Print", "ExpressionUUID" -> \
+"8da21024-d4ee-441e-b57f-212b9f9a404e"],
+Cell[120390, 2999, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"d233e793-8aff-4e4b-88ff-b563245c99d1"],
+Cell[120537, 3004, 226, 5, 24, "Print", "ExpressionUUID" -> \
+"ba030d75-a7ad-439e-ab26-c8d5c1faa6bd"],
+Cell[120766, 3011, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"fca75f8f-341f-4489-bddb-d0f54a4ec01c"],
+Cell[120913, 3016, 228, 5, 24, "Print", "ExpressionUUID" -> \
+"dc4f9b50-c4b5-49ba-9563-3b9d9dae5b66"],
+Cell[121144, 3023, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"6cf7cdc2-1c06-47a5-bc60-759e4d7e2d26"],
+Cell[121289, 3028, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"3ac8e737-17da-4c8a-bc79-a8219f52b812"],
+Cell[121523, 3035, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"207a1ed3-dcec-47f0-a30a-f89d106276ab"],
+Cell[121670, 3040, 229, 5, 24, "Print", "ExpressionUUID" -> \
+"dc2f2acb-d5f9-4aa9-a3f4-54f9e938bed4"],
+Cell[121902, 3047, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"ff61be1b-484e-4f3f-8556-c6052525c047"],
+Cell[122047, 3052, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"1ece3d36-36c8-44eb-a0fc-2cb36dbcc4a9"],
+Cell[122280, 3059, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"cff84f5c-3122-4a0d-b934-3e5f02adb239"],
+Cell[122425, 3064, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"5d35b33f-b386-4d0f-931b-d4729394e93b"],
+Cell[122658, 3071, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"939d6b32-622c-4e75-ab9a-dba53830f126"],
+Cell[122803, 3076, 232, 5, 24, "Print", "ExpressionUUID" -> \
+"984dedf1-7e6d-4089-9384-7834948cd883"],
+Cell[123038, 3083, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"4d451af1-cf9e-49d3-9f37-b30d2688abf5"],
+Cell[123183, 3088, 225, 4, 24, "Print", "ExpressionUUID" -> \
+"febce90f-cfc5-44fa-8c24-263c8bfd1667"],
+Cell[123411, 3094, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"d3e7ceeb-2624-44cf-be4d-415dfb378cac"],
+Cell[123556, 3099, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"5fcc2cd6-3473-46b0-badb-e7d74683e7cc"],
+Cell[123790, 3106, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"0cfadd53-9c70-420d-96c1-e5b3462e58e5"],
+Cell[123935, 3111, 226, 4, 24, "Print", "ExpressionUUID" -> \
+"097d195e-f6de-47fd-90cb-1f56cec9c946"],
+Cell[124164, 3117, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"bfa70377-6b20-404d-8e2a-557eaa2463b8"],
+Cell[124311, 3122, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"cf7540a4-603b-45ca-a557-0d62a0cfe05e"],
+Cell[124544, 3129, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"e07544eb-4721-4ffc-8990-191cd708c154"],
+Cell[124689, 3134, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"278d9a7c-07ae-402c-bd3d-da0fe88cd2b5"],
+Cell[124922, 3141, 139, 2, 24, "Print", "ExpressionUUID" -> \
+"54b6dd10-e70f-4f78-af8d-2fe27323216c"],
+Cell[125064, 3145, 227, 4, 24, "Print", "ExpressionUUID" -> \
+"5ef5a8df-71a7-4c5d-a3f6-9ca514c1f856"],
+Cell[125294, 3151, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"183af14e-de16-44e1-a7b9-8a55811beaa1"],
+Cell[125439, 3156, 222, 4, 24, "Print", "ExpressionUUID" -> \
+"6e9b84e1-9eed-4a67-8f0b-d92333c95e4d"],
+Cell[125664, 3162, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"87556a72-c604-4836-895d-e578ca735136"],
+Cell[125809, 3167, 227, 5, 24, "Print", "ExpressionUUID" -> \
+"f0dda739-6537-4546-bd92-0f04994445d8"],
+Cell[126039, 3174, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"1d9a5ba1-df61-4df0-b8ae-e0ac8ac100b0"],
+Cell[126184, 3179, 225, 5, 24, "Print", "ExpressionUUID" -> \
+"71953de9-29b0-4d31-8016-9a32712b8b09"],
+Cell[126412, 3186, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"b68f98d8-73d1-4203-852c-c62ce0db73be"],
+Cell[126557, 3191, 225, 5, 24, "Print", "ExpressionUUID" -> \
+"02ea5200-bf6d-427f-8dd4-ab480b489aa0"],
+Cell[126785, 3198, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"84ee9fc5-4be3-49a1-b8c7-c0abbed18db9"],
+Cell[126930, 3203, 225, 5, 24, "Print", "ExpressionUUID" -> \
+"fbb959bb-2ebd-4c9e-a9c5-8836dc0bb7f4"],
+Cell[127158, 3210, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"2f324a2b-ea38-4426-93f2-ef2f156f59e1"],
+Cell[127305, 3215, 226, 5, 24, "Print", "ExpressionUUID" -> \
+"ec1b9bf5-462f-4c0d-8a18-68352be859af"],
+Cell[127534, 3222, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"53277014-a380-4bd4-893a-7c12395348d3"],
+Cell[127681, 3227, 226, 5, 24, "Print", "ExpressionUUID" -> \
+"93b617ba-d77c-44ae-a17a-b3140e566ae3"],
+Cell[127910, 3234, 139, 2, 24, "Print", "ExpressionUUID" -> \
+"88dac333-f5c7-48f9-9c26-6374cb056ef4"],
+Cell[128052, 3238, 228, 5, 24, "Print", "ExpressionUUID" -> \
+"bf28c4d7-b6f4-4628-ab17-e70385775ee4"],
+Cell[128283, 3245, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"8a33c280-86dd-4f8f-857b-429513b0a0a3"],
+Cell[128428, 3250, 220, 5, 24, "Print", "ExpressionUUID" -> \
+"b86f4593-f410-4f76-b23a-89264f4ce3db"],
+Cell[128651, 3257, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"9fd8eee5-10ae-4d9d-a7f8-6fac3da3a00b"],
+Cell[128796, 3262, 220, 5, 24, "Print", "ExpressionUUID" -> \
+"7b56dc04-2dd7-499f-909f-e31b875c9608"],
+Cell[129019, 3269, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"89409083-8db8-4dbd-beda-96040edfd036"],
+Cell[129164, 3274, 223, 5, 24, "Print", "ExpressionUUID" -> \
+"2e5c8a15-eb07-4f76-a190-204137160bae"],
+Cell[129390, 3281, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"78c8b294-9b12-4b39-a295-6472d6d542e9"],
+Cell[129535, 3286, 223, 5, 24, "Print", "ExpressionUUID" -> \
+"b9d978b1-228b-4c9a-8438-40c0b84d4074"],
+Cell[129761, 3293, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"8db32f49-a88e-4e68-9bfe-680e95d5b7b4"],
+Cell[129906, 3298, 221, 5, 24, "Print", "ExpressionUUID" -> \
+"23ce98e4-cab6-413b-b47e-d9599acd7763"],
+Cell[130130, 3305, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"e9758238-4ff7-41f4-adc8-f53a5770eea4"],
+Cell[130275, 3310, 221, 5, 24, "Print", "ExpressionUUID" -> \
+"e0c4caf4-0ced-42d3-935e-3afdd9b551c2"],
+Cell[130499, 3317, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"3b607318-63e2-4c93-bacc-31d52d493140"],
+Cell[130644, 3322, 221, 5, 24, "Print", "ExpressionUUID" -> \
+"4f83d834-e0e6-4e37-bfda-9841a226d477"],
+Cell[130868, 3329, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"168f2a00-2a1f-453a-b844-8c2eac87c5be"],
+Cell[131013, 3334, 222, 5, 24, "Print", "ExpressionUUID" -> \
+"c6909ef6-035b-4c70-a810-f50a883dec60"],
+Cell[131238, 3341, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"040e2124-20e6-4b56-89f2-795c4cb52276"],
+Cell[131383, 3346, 222, 5, 24, "Print", "ExpressionUUID" -> \
+"a409235b-c2a3-4143-8f7f-123a4f0b28cc"],
+Cell[131608, 3353, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"4ac3a082-1286-49e7-b130-f6b6163debc2"],
+Cell[131753, 3358, 223, 5, 24, "Print", "ExpressionUUID" -> \
+"62e9b05b-85cf-45ed-90c9-fe8f04e73014"],
+Cell[131979, 3365, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"4c76a42a-8b45-4642-9843-f5c3e74d73b0"],
+Cell[132124, 3370, 223, 5, 24, "Print", "ExpressionUUID" -> \
+"e22198b4-5bc9-4a65-8d44-e0d2091d761d"],
+Cell[132350, 3377, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"56d0148a-f4b4-455a-a7f6-58f2032d0815"],
+Cell[132497, 3382, 223, 5, 24, "Print", "ExpressionUUID" -> \
+"da981381-5e10-4346-ae2b-b5b5887df321"],
+Cell[132723, 3389, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"3a32e49e-cd8d-4223-9a5b-07c2fbdec9f1"],
+Cell[132868, 3394, 227, 5, 24, "Print", "ExpressionUUID" -> \
+"c3d8aefc-912f-4d2f-99d4-1ba3f98d6bca"],
+Cell[133098, 3401, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"146db66b-3c7b-4474-b598-b1b6ed7e8193"],
+Cell[133243, 3406, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"1d5325ce-1dc8-42fa-8bf6-56b2068d08f9"],
+Cell[133476, 3413, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"f02da28e-2d7c-459b-a3cf-6637bff5ecf0"],
+Cell[133621, 3418, 225, 4, 24, "Print", "ExpressionUUID" -> \
+"689d671f-3950-4a5a-ac02-46e7ef01e926"],
+Cell[133849, 3424, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"ebea0d24-856c-4ca9-8df4-5ea290747304"],
+Cell[133994, 3429, 229, 5, 24, "Print", "ExpressionUUID" -> \
+"0ec58f13-24d9-42fe-a785-02a7f967a59a"],
+Cell[134226, 3436, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"646610d5-4ba2-4ce2-9ee9-0775b989fd90"],
+Cell[134373, 3441, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"70231499-12ee-45a0-aaac-73ff4030401d"],
+Cell[134607, 3448, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"38ec1a3a-ba2c-460a-a516-0c407f0ac280"],
+Cell[134754, 3453, 229, 5, 24, "Print", "ExpressionUUID" -> \
+"76245078-d5ea-4d2d-b0d9-b64ed60789d1"],
+Cell[134986, 3460, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"3b78b6b3-d66d-4dcd-9b72-b39cfa4e86ce"],
+Cell[135131, 3465, 227, 5, 24, "Print", "ExpressionUUID" -> \
+"aa16f33e-2038-458d-9464-b14693f21a86"],
+Cell[135361, 3472, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"9f6b1fae-dad3-4e67-9540-e9ce511908df"],
+Cell[135508, 3477, 228, 5, 24, "Print", "ExpressionUUID" -> \
+"15d57717-1ea9-4ed2-952d-c31555087b0a"],
+Cell[135739, 3484, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"f0d0e4f9-43b8-4830-bfe7-6e399d2e390a"],
+Cell[135886, 3489, 230, 5, 24, "Print", "ExpressionUUID" -> \
+"8734b99f-6607-4de3-8615-e1b0af2b58c6"],
+Cell[136119, 3496, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"bc269209-f42e-46a0-8da6-795869cfc1f2"],
+Cell[136264, 3501, 231, 5, 24, "Print", "ExpressionUUID" -> \
+"6aa62e61-9ea9-4943-94b7-075e6610f03e"],
+Cell[136498, 3508, 139, 2, 24, "Print", "ExpressionUUID" -> \
+"4628ab00-5d8e-40dd-acd2-ccf60becc14d"],
+Cell[136640, 3512, 229, 5, 24, "Print", "ExpressionUUID" -> \
+"17337268-cfb6-4e48-b911-c1e17e7af462"],
+Cell[136872, 3519, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"402c816c-b51d-4e75-89ad-12fd4589e87d"],
+Cell[137017, 3524, 229, 5, 24, "Print", "ExpressionUUID" -> \
+"6beea76c-3b95-49c0-9db0-7bf49f97a313"],
+Cell[137249, 3531, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"20554885-a2fb-4e49-982e-ca505d9fe568"],
+Cell[137396, 3536, 224, 5, 24, "Print", "ExpressionUUID" -> \
+"9195a686-63bf-44ad-a745-e8ee81378b41"],
+Cell[137623, 3543, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"4ea196ef-50f6-4bd9-9911-da94d71bc5b5"],
+Cell[137768, 3548, 224, 5, 24, "Print", "ExpressionUUID" -> \
+"5a474013-4b2a-49a6-b91d-db9edba363ae"],
+Cell[137995, 3555, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"ced74320-9f68-44e4-9a13-70697dc49887"],
+Cell[138140, 3560, 226, 5, 24, "Print", "ExpressionUUID" -> \
+"ff2d23e4-81b6-457a-a810-3cbf01ec8069"],
+Cell[138369, 3567, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"c1620896-22f0-4600-88d5-2e6d5618e74f"],
+Cell[138514, 3572, 224, 5, 24, "Print", "ExpressionUUID" -> \
+"be3eb3c0-83b2-4c54-9850-e48618c34cb4"],
+Cell[138741, 3579, 144, 3, 24, "Print", "ExpressionUUID" -> \
+"682e3af2-b3b4-4c07-ad74-d8df5e252084"],
+Cell[138888, 3584, 226, 5, 24, "Print", "ExpressionUUID" -> \
+"11b34207-a670-4121-9d37-d5798130c496"],
+Cell[139117, 3591, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"08c108bd-8bd3-40fa-b012-dd2e53395958"],
+Cell[139262, 3596, 222, 4, 24, "Print", "ExpressionUUID" -> \
+"49b70c5a-cef0-4b04-9e99-2f24f4d6a52a"],
+Cell[139487, 3602, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"9cb8a62a-4edf-40fd-8adc-c948a8fa59fc"],
+Cell[139632, 3607, 225, 5, 24, "Print", "ExpressionUUID" -> \
+"2d93c109-fc2c-4529-92bd-f0171e9cf382"],
+Cell[139860, 3614, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"20ebeac2-67f1-497c-b811-514f435d66e5"],
+Cell[140005, 3619, 225, 5, 24, "Print", "ExpressionUUID" -> \
+"06547240-2cad-445d-85b6-af8c571d8ab3"],
+Cell[140233, 3626, 142, 3, 24, "Print", "ExpressionUUID" -> \
+"e65a3b27-0ea1-4bad-be0c-0b690ad10585"]
+}, Open  ]]
+}, Open  ]],
+Cell[140402, 3633, 130, 3, 32, "Input", "ExpressionUUID" -> \
+"4cc7031b-fd68-43e8-aa6e-bca09df58c38"]
+}
+]
+*)
+

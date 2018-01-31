@@ -1,0 +1,658 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     29327,        650]
+NotebookOptionsPosition[     26362,        579]
+NotebookOutlinePosition[     26718,        595]
+CellTagsIndexPosition[     26675,        592]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[TextData[StyleBox["Initialize constants", "Title"]], "Text",
+ CellChangeTimes->{{3.7136904879665737`*^9, 
+  3.7136904910087633`*^9}},ExpressionUUID->"3546ffb9-59d3-49cb-b497-\
+f272f24b9d77"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"Declair", " ", "the", " ", "main", " ", "constants"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+    "modelsPath", " ", "=", " ", 
+     "\"\</Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models\>\""}], 
+    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+    "libPath", " ", "=", " ", 
+     "\"\</Users/izapreev/Projects/CCLR/soft/mscots2bdd/build/src/liblink\>\"\
+"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"libName", " ", "=", " ", "\"\<./scots2int\>\""}], 
+    ";"}]}]}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.7136905026571302`*^9, 3.7136905275698757`*^9}, {
+  3.713700292094138*^9, 
+  3.713700294942408*^9}},ExpressionUUID->"efe03e7c-5e0a-4d2c-86b6-\
+595e56f5c270"],
+
+Cell[TextData[StyleBox["Function to convert text controllers to BDDs", \
+"Title"]], "Text",
+ CellChangeTimes->{
+  3.713688296174629*^9, {3.713701337606997*^9, 
+   3.713701369388345*^9}},ExpressionUUID->"9f85a3f6-4d65-45cc-b4bc-\
+10cb965b6a87"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"SetDirectory", "[", "libPath", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"FindLibrary", "[", "libName", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadCtrl", "=", 
+   RowBox[{"LibraryFunctionLoad", "[", 
+    RowBox[{"libName", ",", "\"\<load_controller_bdd\>\"", ",", 
+     RowBox[{"{", "UTF8String", "}"}], ",", "Integer"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"StoreCtrl", " ", "=", " ", 
+    RowBox[{"LibraryFunctionLoad", "[", 
+     RowBox[{
+     "\"\<./scots2int\>\"", ",", " ", "\"\<store_controller_bdd\>\"", ",", 
+      " ", 
+      RowBox[{"{", 
+       RowBox[{"Integer", ",", 
+        RowBox[{"{", 
+         RowBox[{"Real", ",", " ", "2"}], "}"}], ",", " ", "UTF8String", ",", 
+        " ", "Boolean"}], "}"}], ",", " ", "Void"}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Convert", " ", "the", " ", "symbolic", " ", "controllers", " ", 
+    "generated", " ", "as", " ", "text", " ", "into", " ", "SCOTS", " ", 
+    "BDD", " ", "format"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"convertSymbolicCtrl", "[", 
+    RowBox[{
+    "modelsPath_", ",", "tcName_", ",", " ", "tcOrigFileName_", ",", 
+     "tcPointsFileName_", ",", "tcCtrlsFileName_", ",", " ", 
+     "tcSymbFileName_", ",", " ", "isOptimize_"}], "]"}], ":=", " ", 
+   "\[IndentingNewLine]", 
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"tcPath", ",", " ", "ctrlTree", ",", " ", "ctrlsList"}], "}"}], 
+     ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"tcPath", " ", "=", " ", 
+       RowBox[{"FileNameJoin", "[", 
+        RowBox[{"{", 
+         RowBox[{"modelsPath", ",", "tcName"}], "}"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", 
+       RowBox[{"\"\<Start generating \>\"", ",", " ", 
+        RowBox[{"FileNameJoin", "[", 
+         RowBox[{"{", 
+          RowBox[{"tcPath", ",", "tcSymbFileName"}], "}"}], "]"}]}], "]"}], 
+      ";", "\[IndentingNewLine]", 
+      RowBox[{"LoadCtrl", "[", 
+       RowBox[{"FileNameJoin", "[", 
+        RowBox[{"{", 
+         RowBox[{"tcPath", ",", "tcOrigFileName"}], "}"}], "]"}], "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"ctrlTree", " ", "=", " ", 
+       RowBox[{"retreiveResults", "[", 
+        RowBox[{"tcPointsFileName", ",", "tcPath"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"ctrlsList", " ", "=", " ", 
+       RowBox[{"retreiveResults", "[", 
+        RowBox[{"tcCtrlsFileName", ",", "tcPath"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"StoreCtrl", "[", 
+       RowBox[{
+        RowBox[{"Length", "[", "ctrlsList", "]"}], ",", " ", "ctrlTree", ",", 
+        " ", 
+        RowBox[{"FileNameJoin", "[", 
+         RowBox[{"{", 
+          RowBox[{"tcPath", ",", "tcSymbFileName"}], "}"}], "]"}], ",", " ", 
+        "isOptimize"}], "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "\"\<Done\>\"", "]"}], ";"}]}], 
+    "\[IndentingNewLine]", "]"}]}], ";"}]}], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.712411126237515*^9, 3.7124111268825407`*^9}, {
+   3.7124121777561693`*^9, 3.712412210503365*^9}, {3.712467094538907*^9, 
+   3.712467098415023*^9}, {3.7136883275694103`*^9, 3.713688420507473*^9}, {
+   3.713688454658139*^9, 3.713688480660437*^9}, {3.713688513750091*^9, 
+   3.713688565537849*^9}, {3.713688604163933*^9, 3.713688658777047*^9}, {
+   3.713688722569086*^9, 3.713688834407054*^9}, {3.7136888837019*^9, 
+   3.713688917225368*^9}, {3.713688955582116*^9, 3.713688962243266*^9}, {
+   3.7136890869581747`*^9, 3.713689129998344*^9}, 3.7136897034260902`*^9, {
+   3.713689827748094*^9, 3.7136900401506977`*^9}, {3.713690093411528*^9, 
+   3.713690293962772*^9}, 3.7136905231301117`*^9, {3.7136905792264433`*^9, 
+   3.713690594917953*^9}, 3.713690653658868*^9, {3.713691272953252*^9, 
+   3.713691273476925*^9}, {3.71369135005267*^9, 3.713691354059722*^9}, {
+   3.713691498395628*^9, 3.713691554686668*^9}, {3.7136916000705423`*^9, 
+   3.7136917613415728`*^9}, {3.7136918283781347`*^9, 3.71369196347816*^9}, {
+   3.713692071158723*^9, 3.713692073305665*^9}, {3.713692121673142*^9, 
+   3.713692182001397*^9}, {3.713692411147872*^9, 3.713692412323946*^9}, {
+   3.713692539607335*^9, 3.713692547077053*^9}, {3.7136961179755573`*^9, 
+   3.7136964005855417`*^9}, {3.713696433913926*^9, 3.7136966549066*^9}, 
+   3.713696903804984*^9, {3.713697098170874*^9, 3.713697117366693*^9}, {
+   3.713697161130168*^9, 3.713697191564221*^9}, {3.71369725661049*^9, 
+   3.713697267658826*^9}, {3.713697336414476*^9, 3.713697367704257*^9}, {
+   3.7136974584072866`*^9, 3.7136975108816967`*^9}, {3.71369757618892*^9, 
+   3.713697603446463*^9}, {3.7136976643752003`*^9, 3.713697681563149*^9}, {
+   3.713698905478753*^9, 3.713699060751748*^9}, {3.713699094160152*^9, 
+   3.713699197509096*^9}, {3.7136992488218937`*^9, 3.7136992518785477`*^9}, {
+   3.713699297603043*^9, 3.7136993004672403`*^9}, {3.713700365221746*^9, 
+   3.713700393512274*^9}, {3.7137004438014297`*^9, 3.713700457124854*^9}, {
+   3.713700487378447*^9, 3.7137007698603354`*^9}, {3.7137010433850307`*^9, 
+   3.71370104425327*^9}, {3.7137012110224457`*^9, 3.713701296218503*^9}, {
+   3.713702344231683*^9, 
+   3.71370234575828*^9}},ExpressionUUID->"5b1c7fa6-7eeb-4e2e-8803-\
+d744f34aa5e1"],
+
+Cell[TextData[StyleBox["Generate controllers", "Title"]], "Text",
+ CellChangeTimes->{{3.7136904510309668`*^9, 3.713690454014361*^9}, {
+  3.713701324753594*^9, 
+  3.713701330749123*^9}},ExpressionUUID->"2d26e505-da9b-4fad-982b-\
+a32851812e20"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"convertSymbolicCtrl", "[", 
+   RowBox[{
+   "modelsPath", ",", " ", "\"\<dcdc\>\"", ",", "\"\<controller\>\"", ",", 
+    " ", "\"\<points_dcdc\>\"", ",", " ", "\"\<controllers_dcdc\>\"", ",", 
+    " ", "\"\<symbolic\>\"", ",", " ", "False"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"convertSymbolicCtrl", "[", 
+   RowBox[{
+   "modelsPath", ",", " ", "\"\<dcdc_recurrece\>\"", ",", 
+    "\"\<controller1\>\"", ",", " ", "\"\<points_dcdc_rec1\>\"", ",", " ", 
+    "\"\<controllers_dcdc_rec1\>\"", ",", " ", "\"\<symbolic_rec1\>\"", ",", 
+    " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"convertSymbolicCtrl", "[", 
+   RowBox[{
+   "modelsPath", ",", " ", "\"\<dcdc_recurrece\>\"", ",", " ", 
+    "\"\<controller2\>\"", ",", " ", "\"\<points_dcdc_rec2\>\"", ",", " ", 
+    "\"\<controllers_dcdc_rec2\>\"", ",", " ", "\"\<symbolic_rec2\>\"", ",", 
+    " ", "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"convertSymbolicCtrl", "[", 
+   RowBox[{
+   "modelsPath", ",", " ", "\"\<vehicle\>\"", ",", " ", "\"\<controller\>\"", 
+    ",", " ", "\"\<points_vehicle\>\"", ",", " ", 
+    "\"\<controllers_vehicle\>\"", ",", " ", "\"\<symbolic\>\"", ",", " ", 
+    "False"}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"convertSymbolicCtrl", "[", 
+    RowBox[{
+    "modelsPath", ",", " ", "\"\<aircraft\>\"", ",", " ", 
+     "\"\<controller\>\"", ",", " ", "\"\<points_aircraft\>\"", ",", " ", 
+     "\"\<controllers_aircraft\>\"", ",", " ", "\"\<symbolic\>\"", ",", " ", 
+     "False"}], "]"}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"convertSymbolicCtrl", "[", 
+   RowBox[{
+   "modelsPath", ",", " ", "\"\<dcdc\>\"", ",", "\"\<controller\>\"", ",", 
+    " ", "\"\<points_dcdc\>\"", ",", " ", "\"\<controllers_dcdc\>\"", ",", 
+    " ", "\"\<symbolic_red\>\"", ",", " ", "True"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"convertSymbolicCtrl", "[", 
+   RowBox[{
+   "modelsPath", ",", " ", "\"\<dcdc_recurrece\>\"", ",", 
+    "\"\<controller1\>\"", ",", " ", "\"\<points_dcdc_rec1\>\"", ",", " ", 
+    "\"\<controllers_dcdc_rec1\>\"", ",", " ", "\"\<symbolic_rec1_red\>\"", 
+    ",", " ", "True"}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"convertSymbolicCtrl", "[", 
+   RowBox[{
+   "modelsPath", ",", " ", "\"\<dcdc_recurrece\>\"", ",", " ", 
+    "\"\<controller2\>\"", ",", " ", "\"\<points_dcdc_rec2\>\"", ",", " ", 
+    "\"\<controllers_dcdc_rec2\>\"", ",", " ", "\"\<symbolic_rec2_red\>\"", 
+    ",", " ", "True"}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"convertSymbolicCtrl", "[", 
+   RowBox[{
+   "modelsPath", ",", " ", "\"\<vehicle\>\"", ",", " ", "\"\<controller\>\"", 
+    ",", " ", "\"\<points_vehicle\>\"", ",", " ", 
+    "\"\<controllers_vehicle\>\"", ",", " ", "\"\<symbolic_red\>\"", ",", " ",
+     "True"}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"convertSymbolicCtrl", "[", 
+   RowBox[{
+   "modelsPath", ",", " ", "\"\<aircraft\>\"", ",", " ", "\"\<controller\>\"",
+     ",", " ", "\"\<points_aircraft\>\"", ",", " ", 
+    "\"\<controllers_aircraft\>\"", ",", " ", "\"\<symbolic_red\>\"", ",", 
+    " ", "True"}], "]"}], ";"}], "\[IndentingNewLine]"}], "Input",
+ CellChangeTimes->{{3.712411141065707*^9, 3.7124114431111603`*^9}, {
+   3.712411491207597*^9, 3.712411686457197*^9}, {3.712411867045248*^9, 
+   3.712411934984026*^9}, 3.712412110680766*^9, {3.713686838087604*^9, 
+   3.713686887328871*^9}, {3.713686972743822*^9, 3.71368697468064*^9}, {
+   3.7136870256044483`*^9, 3.713687085171369*^9}, {3.7136871425433283`*^9, 
+   3.713687391360813*^9}, {3.713687455168241*^9, 3.713687527958777*^9}, {
+   3.713687568844809*^9, 3.7136876200090847`*^9}, {3.713687682412136*^9, 
+   3.713687716549157*^9}, {3.7136877557968884`*^9, 3.7136877592068367`*^9}, {
+   3.713687815870543*^9, 3.713687919769414*^9}, {3.71368795438491*^9, 
+   3.713688075508581*^9}, {3.713688425437344*^9, 3.7136884357606163`*^9}, {
+   3.713688531511742*^9, 3.71368853900113*^9}, {3.713688583690736*^9, 
+   3.713688628256523*^9}, 3.713688730728232*^9, 3.7136887743968973`*^9, {
+   3.71368882211229*^9, 3.713688902632594*^9}, {3.713688936252757*^9, 
+   3.713689057740613*^9}, {3.7136891344246807`*^9, 3.713689149908471*^9}, 
+   3.7136896998983603`*^9, {3.713689759859931*^9, 3.713689762854725*^9}, {
+   3.713690307491297*^9, 3.7136904423159513`*^9}, {3.713690472808051*^9, 
+   3.713690474829895*^9}, {3.713690562575556*^9, 3.713690575428403*^9}, {
+   3.713690659995913*^9, 3.7136907006641617`*^9}, {3.713691507182119*^9, 
+   3.71369151745744*^9}, {3.71369667127802*^9, 3.713696739406639*^9}, {
+   3.7137008065972767`*^9, 3.713700883992708*^9}, {3.713701050877461*^9, 
+   3.7137011230119762`*^9}, {3.7137011620425*^9, 3.713701197582573*^9}, {
+   3.713701316947035*^9, 3.713701320730384*^9}, {3.713701376577269*^9, 
+   3.713701410535924*^9}},ExpressionUUID->"8cfaae92-61d7-4551-ae7e-\
+6f0018eda370"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Start generating \"\>", 
+   "\[InvisibleSpace]", \
+"\<\"/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/symbolic\"\
+\>"}],
+  SequenceForm[
+  "Start generating ", 
+   "/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/symbolic"],
+  
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.713702374140348*^9},ExpressionUUID->"24ed00f3-5a18-4759-902a-\
+230711108d16"],
+
+Cell[BoxData["\<\"Done\"\>"], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.713702374495039*^9},ExpressionUUID->"959d864f-7c6d-41d9-90b0-\
+fd37c38cb99e"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Start generating \"\>", 
+   "\[InvisibleSpace]", \
+"\<\"/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_recurrece/\
+symbolic_rec1\"\>"}],
+  SequenceForm[
+  "Start generating ", 
+   "/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_recurrece/\
+symbolic_rec1"],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.7137023745020933`*^9},ExpressionUUID->"575fabf2-ddb0-43d8-9627-\
+3787179227aa"],
+
+Cell[BoxData["\<\"Done\"\>"], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.7137023747920628`*^9},ExpressionUUID->"a4867c60-08c1-4beb-8778-\
+e30d85199432"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Start generating \"\>", 
+   "\[InvisibleSpace]", \
+"\<\"/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_recurrece/\
+symbolic_rec2\"\>"}],
+  SequenceForm[
+  "Start generating ", 
+   "/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_recurrece/\
+symbolic_rec2"],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.713702374796586*^9},ExpressionUUID->"f33679e7-2dca-4d10-8e16-\
+6e7fd010a883"],
+
+Cell[BoxData["\<\"Done\"\>"], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.7137023750972223`*^9},ExpressionUUID->"7f737c39-c9cf-4846-b86a-\
+8b5e43a3764a"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Start generating \"\>", 
+   "\[InvisibleSpace]", \
+"\<\"/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/\
+symbolic\"\>"}],
+  SequenceForm[
+  "Start generating ", 
+   "/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/\
+symbolic"],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.713702375101565*^9},ExpressionUUID->"73d1dd36-6944-41b4-a31c-\
+4b9ec6671ce9"],
+
+Cell[BoxData["\<\"Done\"\>"], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.71370237563202*^9},ExpressionUUID->"28881510-58bb-4ee1-a68f-\
+b352c4912489"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Start generating \"\>", 
+   "\[InvisibleSpace]", \
+"\<\"/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/\
+symbolic\"\>"}],
+  SequenceForm[
+  "Start generating ", 
+   "/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/\
+symbolic"],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.7137023756422253`*^9},ExpressionUUID->"bd3b63a5-4ee6-46a4-9b15-\
+89bced075a07"],
+
+Cell[BoxData["\<\"Done\"\>"], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.7137024355658817`*^9},ExpressionUUID->"ea14fdb4-5949-4bff-96ac-\
+a9d5d383ac23"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Start generating \"\>", 
+   "\[InvisibleSpace]", \
+"\<\"/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/symbolic_\
+red\"\>"}],
+  SequenceForm[
+  "Start generating ", 
+   "/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc/symbolic_\
+red"],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.713702435842998*^9},ExpressionUUID->"c1e1e3cc-42ea-422c-914c-\
+fc0516df29f4"],
+
+Cell[BoxData["\<\"Done\"\>"], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.713702436216587*^9},ExpressionUUID->"4f6a44f4-853b-43d8-bab4-\
+32377b6e2afc"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Start generating \"\>", 
+   "\[InvisibleSpace]", \
+"\<\"/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_recurrece/\
+symbolic_rec1_red\"\>"}],
+  SequenceForm[
+  "Start generating ", 
+   "/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_recurrece/\
+symbolic_rec1_red"],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.713702436220532*^9},ExpressionUUID->"588b3720-a8ff-4ab2-b835-\
+57017ca329be"],
+
+Cell[BoxData["\<\"Done\"\>"], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.713702436513332*^9},ExpressionUUID->"5932232a-772d-43d1-b992-\
+3f46e92cbfd4"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Start generating \"\>", 
+   "\[InvisibleSpace]", \
+"\<\"/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_recurrece/\
+symbolic_rec2_red\"\>"}],
+  SequenceForm[
+  "Start generating ", 
+   "/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/dcdc_recurrece/\
+symbolic_rec2_red"],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.713702436517138*^9},ExpressionUUID->"e1303402-b923-427d-94ad-\
+f775db5e3b1d"],
+
+Cell[BoxData["\<\"Done\"\>"], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.713702436811822*^9},ExpressionUUID->"e7574348-79c7-43df-b2ca-\
+55ca157bf8b5"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Start generating \"\>", 
+   "\[InvisibleSpace]", \
+"\<\"/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/\
+symbolic_red\"\>"}],
+  SequenceForm[
+  "Start generating ", 
+   "/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/vehicle/\
+symbolic_red"],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.71370243681654*^9},ExpressionUUID->"3f3892b6-192d-43ca-98c7-\
+f683eb93f47f"],
+
+Cell[BoxData["\<\"Done\"\>"], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.713702437362173*^9},ExpressionUUID->"e4baaeb8-c9a0-42a3-a469-\
+4a67396cc939"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Start generating \"\>", 
+   "\[InvisibleSpace]", \
+"\<\"/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/\
+symbolic_red\"\>"}],
+  SequenceForm[
+  "Start generating ", 
+   "/Users/izapreev/Projects/CCLR/soft/mscots2bdd/data/models/aircraft/\
+symbolic_red"],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.7137024373738127`*^9},ExpressionUUID->"98df9d62-7681-45f9-ae91-\
+02caac166332"],
+
+Cell[BoxData["\<\"Done\"\>"], "Print",
+ CellChangeTimes->{{3.713692432952496*^9, 3.7136924500386667`*^9}, 
+   3.7136968692768373`*^9, {3.713696917293963*^9, 3.713696942310638*^9}, {
+   3.713697292174123*^9, 3.7136973162031307`*^9}, 3.713697415744396*^9, 
+   3.71369753020022*^9, 3.713697627574472*^9, 3.713698992516778*^9, 
+   3.713699208141431*^9, 3.713699265277493*^9, 3.7136993204536963`*^9, 
+   3.7137013042031507`*^9, 3.713701468755328*^9, 
+   3.71370254659398*^9},ExpressionUUID->"0a9c1001-54d3-4579-bd92-\
+4f9017248b18"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1316, 612},
+WindowMargins->{{Automatic, 28}, {42, Automatic}},
+FrontEndVersion->"11.1 for Mac OS X x86 (32-bit, 64-bit Kernel) (April 27, \
+2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 195, 3, 66, "Text", "ExpressionUUID" -> \
+"3546ffb9-59d3-49cb-b497-f272f24b9d77"],
+Cell[756, 25, 825, 23, 133, "Input", "ExpressionUUID" -> \
+"efe03e7c-5e0a-4d2c-86b6-595e56f5c270",
+ InitializationCell->True],
+Cell[1584, 50, 243, 5, 66, "Text", "ExpressionUUID" -> \
+"9f85a3f6-4d65-45cc-b4bc-10cb965b6a87"],
+Cell[1830, 57, 5389, 110, 364, "Input", "ExpressionUUID" -> \
+"5b1c7fa6-7eeb-4e2e-8803-d744f34aa5e1",
+ InitializationCell->True],
+Cell[7222, 169, 242, 4, 66, "Text", "ExpressionUUID" -> \
+"2d26e505-da9b-4fad-982b-a32851812e20"],
+Cell[CellGroupData[{
+Cell[7489, 177, 5015, 96, 264, "Input", "ExpressionUUID" -> \
+"8cfaae92-61d7-4551-ae7e-6f0018eda370"],
+Cell[CellGroupData[{
+Cell[12529, 277, 828, 18, 24, "Print", "ExpressionUUID" -> \
+"24ed00f3-5a18-4759-902a-230711108d16"],
+Cell[13360, 297, 528, 8, 24, "Print", "ExpressionUUID" -> \
+"959d864f-7c6d-41d9-90b0-fd37c38cb99e"],
+Cell[13891, 307, 859, 18, 24, "Print", "ExpressionUUID" -> \
+"575fabf2-ddb0-43d8-9627-3787179227aa"],
+Cell[14753, 327, 530, 8, 24, "Print", "ExpressionUUID" -> \
+"a4867c60-08c1-4beb-8778-e30d85199432"],
+Cell[15286, 337, 857, 18, 24, "Print", "ExpressionUUID" -> \
+"f33679e7-2dca-4d10-8e16-6e7fd010a883"],
+Cell[16146, 357, 530, 8, 24, "Print", "ExpressionUUID" -> \
+"7f737c39-c9cf-4846-b86a-8b5e43a3764a"],
+Cell[16679, 367, 833, 18, 24, "Print", "ExpressionUUID" -> \
+"73d1dd36-6944-41b4-a31c-4b9ec6671ce9"],
+Cell[17515, 387, 527, 8, 24, "Print", "ExpressionUUID" -> \
+"28881510-58bb-4ee1-a68f-b352c4912489"],
+Cell[18045, 397, 837, 18, 24, "Print", "ExpressionUUID" -> \
+"bd3b63a5-4ee6-46a4-9b15-89bced075a07"],
+Cell[18885, 417, 530, 8, 24, "Print", "ExpressionUUID" -> \
+"ea14fdb4-5949-4bff-96ac-a9d5d383ac23"],
+Cell[19418, 427, 835, 18, 24, "Print", "ExpressionUUID" -> \
+"c1e1e3cc-42ea-422c-914c-fc0516df29f4"],
+Cell[20256, 447, 528, 8, 24, "Print", "ExpressionUUID" -> \
+"4f6a44f4-853b-43d8-bab4-32377b6e2afc"],
+Cell[20787, 457, 865, 18, 24, "Print", "ExpressionUUID" -> \
+"588b3720-a8ff-4ab2-b835-57017ca329be"],
+Cell[21655, 477, 528, 8, 24, "Print", "ExpressionUUID" -> \
+"5932232a-772d-43d1-b992-3f46e92cbfd4"],
+Cell[22186, 487, 865, 18, 24, "Print", "ExpressionUUID" -> \
+"e1303402-b923-427d-94ad-f775db5e3b1d"],
+Cell[23054, 507, 528, 8, 24, "Print", "ExpressionUUID" -> \
+"e7574348-79c7-43df-b2ca-55ca157bf8b5"],
+Cell[23585, 517, 840, 18, 24, "Print", "ExpressionUUID" -> \
+"3f3892b6-192d-43ca-98c7-f683eb93f47f"],
+Cell[24428, 537, 528, 8, 24, "Print", "ExpressionUUID" -> \
+"e4baaeb8-c9a0-42a3-a469-4a67396cc939"],
+Cell[24959, 547, 845, 18, 24, "Print", "ExpressionUUID" -> \
+"98df9d62-7681-45f9-ae91-02caac166332"],
+Cell[25807, 567, 527, 8, 24, "Print", "ExpressionUUID" -> \
+"0a9c1001-54d3-4579-bd92-4f9017248b18"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
