@@ -1,6 +1,7 @@
 #Introduction
 
 #Installation of third party software
+
 In order to run the software one requires Mathematica (<https://www.wolfram.com/mathematica/>) being installed. In addition one will require:
 
 1. GCC(<https://gcc.gnu.org/>) - the GNU compiler collection
@@ -25,7 +26,7 @@ On any platform CUDD requires the UUID package, to be more precise the developme
 	make
 	sudo make install
 ```
-#Ubuntu
+##Ubuntu
 
   -  On Ubuntu we use the following sequence:
 
@@ -140,6 +141,7 @@ Choose the install name to be `scots2`.
        Uninstall[link]
 
 #Installing the LibraryLink software
+
 Load the build/src/liblink/scots2int.dylink (Mac OS X) or build/src/liblink/scots2int.so (Linux) dynamic library functions into Mathematica kernel by following the next steps:
 
 	SetDirectory["<PATH_TO_PROJECT_LOCATION>/mscots2bdd/build/src/liblink"]	
@@ -156,4 +158,5 @@ Note that, the LoadCtrl (load_controller_bdd) function returns the number of DdN
 In all cases to un-load a library function one needs to use LibraryFunctionUnload. In order to unload the entire library one needs using LibraryUnload. However the latter does not always work, at least not on all platforms. Therefore, is a new version of the library is to be loaded one needs to re-start Mathematica first to let the previous version be unloaded.
 
 #Using the LibraryLink software
+
 The example usage of the LibraryLink software is given in the ./data/liblink_example.nb Please make sure that the absolute paths to the generated shared library and the bdd controller are updated. The example is made and tested on Mac OS X and Linux.
