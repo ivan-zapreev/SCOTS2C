@@ -35,12 +35,12 @@ SCOTSv2.0 and CUDDv3.0.0 are pre-packaged in the `./ext` folder of the project. 
   -  On MAC OS X we use the following sequence:
 
 ```
-	export CUDDPATH=/opt/local/
-	cd ./ext/cudd-3.0.0
-	./configure --enable-shared --enable-obj \
-	--enable-dddmp --prefix=${CUDDPATH}
-	make
-	sudo make install
+export CUDDPATH=/opt/local/
+cd ./ext/cudd-3.0.0
+./configure --enable-shared --enable-obj \
+--enable-dddmp --prefix=${CUDDPATH}
+make
+sudo make install
 ```
 
 ##Ubuntu
@@ -48,26 +48,26 @@ SCOTSv2.0 and CUDDv3.0.0 are pre-packaged in the `./ext` folder of the project. 
   -  On Ubuntu we use the following sequence:
 
 ```
-	export CUDDPATH=/usr/local
-	cd ./ext/cudd-3.0.0
-	./configure --enable-shared --enable-obj \
-	--enable-dddmp --prefix=${CUDDPATH}
-	make
-	sudo make install
+export CUDDPATH=/usr/local
+cd ./ext/cudd-3.0.0
+./configure --enable-shared --enable-obj \
+--enable-dddmp --prefix=${CUDDPATH}
+make
+sudo make install
 ```
 
-  -  Make sure that the `./ext/cudd-3.0.0/util/util.h` and `./ext/cudd-3.0.0/config.h` have been copied into "${CUDDPATH}/include" by running
+  -  Make sure that the `./ext/cudd-3.0.0/util/util.h` and `./ext/cudd-3.0.0/config.h` have been copied into `${CUDDPATH}/include` by running
 
 ```
-	find ${CUDDPATH}/include -name "util.h"
-	find ${CUDDPATH}/include -name "config.h"
+find ${CUDDPATH}/include -name "util.h"
+find ${CUDDPATH}/include -name "config.h"
 ```
 
   -  If one of the header files was not copied then use an appropriate command
 	
 ```
-	sudo cp ./ext/cudd-3.0.0/util/util.h ${CUDDPATH}/include
-	sudo cp ./ext/cudd-3.0.0/config.h ${CUDDPATH}/include
+sudo cp ./ext/cudd-3.0.0/util/util.h ${CUDDPATH}/include
+sudo cp ./ext/cudd-3.0.0/config.h ${CUDDPATH}/include
 ```
 
 For building WSTP and LibraryLink interfaces on required Wolfram Mathematica (<https://www.wolfram.com/mathematica/>) to be installed. Note that, our building scripts use `FindMathematica` CMake package (<https://github.com/sakra/FindMathematica/>) for finding the Mathematica distribution. The latter assumes that Mathematica is expected to be installed into a standard location. For more details see the package's manual <https://github.com/sakra/FindMathematica/blob/master/MANUAL.md>
@@ -99,40 +99,40 @@ Install the `build/src/wstp/scots2ext` WSTP application through the Notebook in 
    1. Load through interface:
 
 ```   
-  	SetDirectory["<PROJECT_LOCATION>/mscots2bdd/build/src/wstp"]
-  	link = Install["./scots2ext"]
-  	LinkPatterns[link]
+SetDirectory["<PROJECT_LOCATION>/mscots2bdd/build/src/wstp"]
+link = Install["./scots2ext"]
+LinkPatterns[link]
 ```
       	
    2. Run from command line and connect through interface.
 	In command-line console run
 
 ```	
-	$./build/src/wstp/scots2ext
+$./build/src/wstp/scots2ext
 ```
 
 	In the application's prompt type:
 
 ```		
-	myPort
+myPort
 ```
 		
 	Within Mathematica use
 	
 ```
-	link = Install["myPort", LinkMode -> Connect]
+link = Install["myPort", LinkMode -> Connect]
 ```
 		
    In both cases to uninstall or disconnect use
 
 ```   
-	Uninstall[link]
+Uninstall[link]
 ```
 
 Install the `src/scots2.m` package through the Mathematica Menu:
 
 ```
-   File>Install...
+File>Install...
 ```
     
 Choose the install name to be `scots2`.
@@ -141,17 +141,17 @@ Choose the install name to be `scots2`.
 
 1. Load the SCOTSv2.0 controller (*.scs) by calling
 ```
-    SCOTSv2`LoadBDDController[]
+SCOTSv2`LoadBDDController[]
 ```
    or
 ```
-   Global`LoadSCOTSv2BDD["<PATH_TO_CONTROLLER>/controller"]
+Global`LoadSCOTSv2BDD["<PATH_TO_CONTROLLER>/controller"]
 ```
    Note that the `.scs` file extension is ommited.
 
    At the moment only the BDD controllers are supported. See the pre-generated example controllers from SCOTSv2.0 located in:
 ```
-   ./data/models
+./data/models
 ```
 
 2. To see the operations available via the link use `LinkPatterns[link]`
