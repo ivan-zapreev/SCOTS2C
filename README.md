@@ -1,60 +1,71 @@
 #Introduction
+This project consists of several SCOTSv2.0 BDD controllers related software components:
 
-#Installation of third party software
+1. The BDD controller interfaces for Wolfram Mathematica:
+	
+	1.1 WSTP interface
+	
+	1.2 LibraryLink interface
+	
+2. BDD controller related software:
+	
+	2.1 `scots_opt_det` - the BDD controller determinizer
+	
+	2.2 `scots_to_svg` - the BDD controller to SVG image converter
+	
+	2.3 `scots_split_det` - the BDD controller per-input value splitter
 
-In order to run the software one requires Mathematica (<https://www.wolfram.com/mathematica/>) being installed. In addition one will require:
+The former can be used in order to work with SCOTSv2.0 BDD controllers from Mathematica. The latter can be used to: *(i)* determinize BDD controllers, in order to reduce their size; *(ii)* visualize the BDD controller as a 2D image; *(iii)* split the controller into parts corresponding to different control input values.
+
+#Installation
+
+All of the software components require:
 
 1. GCC(<https://gcc.gnu.org/>) - the GNU compiler collection
 2. CMAKE(<https://cmake.org/>) - the cross platform software building tool
 3. Automake 1.14.1 (<http://ftp.gnu.org/gnu/automake/>) - the cross platform software building tool
+4. SCOTSv2.0 (<https://gitlab.lrz.de/matthias/SCOTSv0.2>) - the tool for generating symbolic controllers
+5. CUDDv3.0.0 (<http://vlsi.colorado.edu/~fabio/>) - the BDD management library
 
-The building and installation instructions for the listed tools come with the tools.
-
-Note that, SCOTSv2.0 (<https://gitlab.lrz.de/matthias/SCOTSv0.2>) and CUDDv3.0.0 (<http://vlsi.colorado.edu/~fabio/>) are already integrated into the project under ./ext. SCOTSv2.0 is a header-only C++ library so it does not require building or installation. The supplied CUDDv3.0.0 is already fixed  a way required by SCOTSv2.0, see Section 3.1 of the SCOTSv2.0 manual. However it steel needs to be build and installed. 
-
-On any platform CUDD requires the UUID package, to be more precise the development version thereof, on Ubuntu known as "uuid-dev". This library can be installed for instance by running "sudo apt-get install uuid-dev". Below we list two instruction sets for building and installing CUDD on two platforms:
+SCOTSv2.0 and CUDDv3.0.0 are pre-packaged in the `./ext` folder of the project. SCOTSv2.0 is a header-only C++ library so it does not require building or installation. CUDD is to be build and installed. It requires the UUID package, to be more precise the development version thereof, on Ubuntu known as "uuid-dev". This library can be installed for instance by running "sudo apt-get install uuid-dev". Below we list two instruction sets for building and installing CUDD on two platforms:
 
 ##Max OS X
 
   -  On MAC OS X we use the following sequence:
 
-```
-	export CUDDPATH=/opt/local/
-	cd ./ext/cudd-3.0.0
-	./configure --enable-shared --enable-obj \
-	--enable-dddmp --prefix=${CUDDPATH}
-	make
-	sudo make install
-```
+		export CUDDPATH=/opt/local/
+		cd ./ext/cudd-3.0.0
+		./configure --enable-shared --enable-obj \
+		--enable-dddmp --prefix=${CUDDPATH}
+		make
+		sudo make install
+
 ##Ubuntu
 
   -  On Ubuntu we use the following sequence:
 
-```
-	export CUDDPATH=/usr/local
-	cd ./ext/cudd-3.0.0
-	./configure --enable-shared --enable-obj \
-	--enable-dddmp --prefix=${CUDDPATH}
-	make
-	sudo make install
-```
-  -  Make sure that the "./ext/cudd-3.0.0/util/util.h" and "./ext/cudd-3.0.0/config.h" have been copied into "${CUDDPATH}/include" by running
+		export CUDDPATH=/usr/local
+		cd ./ext/cudd-3.0.0
+		./configure --enable-shared --enable-obj \
+		--enable-dddmp --prefix=${CUDDPATH}
+		make
+		sudo make install
 
-```
-	find ${CUDDPATH}/include -name "util.h"
-	find ${CUDDPATH}/include -name "config.h"
-```
+  -  Make sure that the `./ext/cudd-3.0.0/util/util.h` and `./ext/cudd-3.0.0/config.h` have been copied into "${CUDDPATH}/include" by running
+
+		find ${CUDDPATH}/include -name "util.h"
+		find ${CUDDPATH}/include -name "config.h"
 
   -  If one of the header files was not copied then use an appropriate command
 	
-```
-	sudo cp ./ext/cudd-3.0.0/util/util.h ${CUDDPATH}/include
-	sudo cp ./ext/cudd-3.0.0/config.h ${CUDDPATH}/include
-```
+		sudo cp ./ext/cudd-3.0.0/util/util.h ${CUDDPATH}/include
+		sudo cp ./ext/cudd-3.0.0/config.h ${CUDDPATH}/include
 
-Note that, the tooling uses FindMathematica CMake package (<https://github.com/sakra/FindMathematica/>) for finding the Mathematica distribution. It means that Mathematica is expected to be installed into a standard location. For more details see the package's manual <https://github.com/sakra/FindMathematica/blob/master/MANUAL.md>
+
+For building WSTP and LibraryLink interfaces on required Wolfram Mathematica (<https://www.wolfram.com/mathematica/>) to be installed. Note that, our building scripts use `FindMathematica` CMake package (<https://github.com/sakra/FindMathematica/>) for finding the Mathematica distribution. The latter assumes that Mathematica is expected to be installed into a standard location. For more details see the package's manual <https://github.com/sakra/FindMathematica/blob/master/MANUAL.md>
 
 #Building the software
+
 Build the SCOTSv2.0 to Mathematica interface package from the project root by
 
 	mkdir build
@@ -67,9 +78,11 @@ Note that, if source code of the software has been changed then one is required 
 	cmake ..
 	make
 
-The software comes in two versions, one version is WSTP based and the other uses LibraryLink. They are mostly identical in functionality with the exception of LibraryLink version being able to retrieve the set of all grid points at once. Further we shall first describe how the WSTP version is to be installed and used and then the same will be done for the LibraryLink version. The former is ran as a separate process and thus has not impact on the Mathematica Kernel, and benefits from all of the WSTP features. Yet the WSTP version is slower than the LibraryLink version which is however run inside the Mathematica Kernel and thus, in case of failures, may cause an interference.
+
+The Mathematica interface software comes in two versions: one version is WSTP based and the other uses LibraryLink. They are mostly identical in functionality with the exception of LibraryLink version being able to retrieve the set of all grid points at once. Further we shall first describe how the WSTP version is to be installed and used and then the same will be done for the LibraryLink version. The former is ran as a separate process and thus has not impact on the Mathematica Kernel, and benefits from all of the WSTP features. Yet the WSTP version is slower than the LibraryLink version which is however run inside the Mathematica Kernel and thus, in case of failures, may cause an interference.
 
 #Installing the WSTP software
+
 Install the `build/src/wstp/scots2ext` WSTP application through the Notebook in Mathematica.
 
    1. Load through interface:

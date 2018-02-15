@@ -1,11 +1,21 @@
 # FindMathematica WSTP examples
 
-include_directories(${Mathematica_INCLUDE_DIRS})
-
-SET(BASEPATH "${CMAKE_SOURCE_DIR}")
+SET(BASE_PATH "${CMAKE_SOURCE_DIR}")
+SET(EXT_PATH "${BASE_PATH}/ext")
 
 #Bring the headers into the project
-include_directories(SYSTEM ${BASEPATH}/ext/SCOTSv0.2/src ${BASEPATH}/ext/SCOTSv0.2/utils)
+include_directories(SYSTEM
+                    ${Mathematica_INCLUDE_DIRS}
+                    ${BASEPATH}/src/optdet/
+                    ${EXT_PATH}
+                    ${EXT_PATH}/cudd-3.0.0/cudd
+                    ${EXT_PATH}/cudd-3.0.0/cplusplus
+                    ${EXT_PATH}/cudd-3.0.0/dddmp
+                    ${EXT_PATH}/SCOTSv0.2/src
+                    ${EXT_PATH}/SCOTSv0.2/utils
+                    ${EXT_PATH}/tclap
+                    ${EXT_PATH}/svgDrawer)
+link_directories(/opt/local/lib /usr/local/lib)
 
 #Add the required flags
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -std=c++11 -O3 -DNDEBUG -DSCOTS_BDD")

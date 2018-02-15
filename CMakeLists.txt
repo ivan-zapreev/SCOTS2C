@@ -35,6 +35,17 @@ if (Mathematica_WSTP_DEFINITIONS)
 	add_definitions(${Mathematica_WSTP_DEFINITIONS})
 endif()
 
+SET(OPT_LOCAL_LIB_DIR "/opt/local/lib")
+SET(USR_LOCAL_LIB_DIR "/usr/local/lib")
+SET(LIB_DIRS "")
+if (EXISTS "${OPT_LOCAL_LIB_DIR}" AND IS_DIRECTORY "${OPT_LOCAL_LIB_DIR}")
+	SET(LIB_DIRS ${LIB_DIRS} ${OPT_LOCAL_LIB_DIR})
+endif()
+if (EXISTS "${USR_LOCAL_LIB_DIR}" AND IS_DIRECTORY "${USR_LOCAL_LIB_DIR}")
+	SET(LIB_DIRS ${LIB_DIRS} ${USR_LOCAL_LIB_DIR})
+endif()
+link_directories(${LIB_DIRS})
+
 if (${Mathematica_FOUND})
 	message(STATUS "Mathematica Version ${Mathematica_VERSION}")
 
@@ -89,4 +100,3 @@ file (COPY ${_SourceFiles}
 	NO_SOURCE_PERMISSIONS)
 #Add the LibraryLink library source folder
 add_subdirectory(src/optdet/)
-
