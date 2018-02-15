@@ -170,8 +170,17 @@ namespace tud {
                      * @return the input value grid id
                      */
                     template<class grid_point_t>
-                    inline abs_type xtoi(const grid_point_t& x) const {
-                        return m_p_is_set->xtoi(x);
+                    inline abs_type xtoi(const grid_point_t& input) const {
+                        return m_p_is_set->xtoi(input);
+                    }
+
+                    /**
+                     * Allows to get the state ids in the grid
+                     * @param input the real-space input id
+                     * @param ids the abstract-space input id
+                     */
+                    inline void xtois(const vector<double> & input, vector<abs_type> & ids) const {
+                        m_p_is_set->xtois(input, ids);
                     }
                     
                     /**

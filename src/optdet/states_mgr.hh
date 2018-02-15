@@ -184,6 +184,14 @@ namespace tud {
                     }
                     
                     /**
+                     * Allows to get the number of states with input signals
+                     * @return the number of states with input signals.
+                     */
+                    inline abs_type get_size() const {
+                        return m_p_ss_set->get_size(m_cudd_mgr, m_ss_bdd);
+                    }
+                    
+                    /**
                      * Allows to get the symbolic set representing the state space of
                      * the controller. This set uses the same BDD variables as the
                      * original controller provided to the class constructor.
