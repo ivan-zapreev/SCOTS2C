@@ -6,7 +6,7 @@ SET(EXT_PATH "${BASE_PATH}/ext")
 #Bring the headers into the project
 include_directories(SYSTEM
                     ${Mathematica_INCLUDE_DIRS}
-                    ${BASEPATH}/src/optdet/
+                    ${BASE_PATH}/src/optdet/
                     ${EXT_PATH}
                     ${EXT_PATH}/cudd-3.0.0/cudd
                     ${EXT_PATH}/cudd-3.0.0/cplusplus
