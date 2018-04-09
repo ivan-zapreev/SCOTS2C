@@ -137,26 +137,18 @@ namespace tud {
                     
                     /**
                      * Allows to stript the controller from the inputs.
-                     * The first input value is assigned to all of the
-                     * controller's states with inputs so the resulting
-                     * controller is about the size of its domain.
+                     * All inputs are removed and only the states are preserved.
                      */
                     void strip_domain() {
                         //Declare the input states manager
                         inputs_mgr is_mgr(m_ctrl_set, m_ss_dim);
-                        
-                        //Convert the input id into BDD, use the BDD input index zero
-                        const BDD & input_bdd = is_mgr.id_to_bdd(0);
-                        
+                      
                         //Get the inputs set reference
                         const SymbolicSet & is_set = is_mgr.get_inputs_set();
                         
                         //Get the BDD representing the states space
                         const BDD S = is_set.get_cube(m_cudd_mgr);
-                        const BDD ss_bdd = m_ctrl_bdd.ExistAbstract(S);
-                        
-                        //Now finalize the result
-                        m_ctrl_bdd = ss_bdd & input_bdd;
+                        m_ctrl_bdd = m_ctrl_bdd.ExistAbstract(S);
                     }
                     
                     /**

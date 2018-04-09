@@ -53,7 +53,7 @@ namespace tud {
                  */
                 class states_mgr {
                 public:
-                    
+
                     /**
                      * The basic constructor that allows to create the class instance
                      * @param ctrl_set stores the system controller
@@ -65,17 +65,17 @@ namespace tud {
                      *                   the convenience we do not, not stored
                      */
                     states_mgr(const SymbolicSet & ctrl_set, const int32_t ss_dim,
-                               const BDD & ctrl_bdd, const Cudd &cudd_mgr,
-                               const SymbolicSet & inputs_set)
+                            const BDD & ctrl_bdd, const Cudd &cudd_mgr,
+                            const SymbolicSet & inputs_set)
                     : m_p_ss_set(NULL), m_ss_bdd(), m_cudd_mgr(cudd_mgr) {
                         //Make a new states set
                         m_p_ss_set = get_states_set(ctrl_set, ss_dim);
-                        
+
                         //Create the state-space BDD by using the existential operator
                         BDD U = inputs_set.get_cube(cudd_mgr);
                         m_ss_bdd = ctrl_bdd.ExistAbstract(U);
                     }
-                    
+
                     /**
                      * Allows to an instance of a symbolic set for the input space from the entire space
                      * @param ctrl_set stores the system's entire controller set
@@ -83,39 +83,39 @@ namespace tud {
                      * @return the pointer to the newed inputs set
                      */
                     static inline SymbolicSet * get_states_set(const SymbolicSet & ctrl_set,
-                                                               const int32_t ss_dim) {
+                            const int32_t ss_dim) {
                         //Get the original controller's data
                         vector<double> lleft = ctrl_set.get_lower_left();
                         vector<double> uright = ctrl_set.get_upper_right();
                         vector<double> etas = ctrl_set.get_eta();
-                        std::vector<IntegerInterval<abs_type>> ints = ctrl_set.get_bdd_intervals();
-                        
+                        std::vector<IntegerInterval < abs_type>> ints = ctrl_set.get_bdd_intervals();
+
                         //Now create new sets of data for the input space
                         vector<double> ss_lleft(lleft.begin(), lleft.begin() + ss_dim);
                         vector<double> ss_uright(uright.begin(), uright.begin() + ss_dim);
                         vector<double> ss_etas(etas.begin(), etas.begin() + ss_dim);
-                        std::vector<IntegerInterval<abs_type>> ss_ints(ints.begin(), ints.begin() + ss_dim);
+                        std::vector<IntegerInterval < abs_type >> ss_ints(ints.begin(), ints.begin() + ss_dim);
 
                         //Instantiate a new grid for the input space
                         UniformGrid ss_grid(ss_dim, ss_lleft,
-                                            ss_uright, ss_etas,
-                                            ctrl_set.is_ext_grid());
-                        
+                                ss_uright, ss_etas);
+
                         //Instantiate a new symbolic set for the input space
                         //using the intervals of the original controller,
                         //this ensures using the same BDD variables
                         return new SymbolicSet(ss_grid, ss_ints);
                     }
+
                     /**
                      * The basic destructor
                      */
                     virtual ~states_mgr() {
-                        if(m_p_ss_set != NULL){
+                        if (m_p_ss_set != NULL) {
                             delete m_p_ss_set;
                             m_p_ss_set = NULL;
                         }
                     }
-                    
+
                     /**
                      * Allows to get the number of dimensions in the state space
                      * @return the number of state-space dimensions
@@ -123,7 +123,7 @@ namespace tud {
                     int get_dim() const {
                         return m_p_ss_set->get_dim();
                     }
-                    
+
                     /**
                      * Allows to get the state id in the grid
                      * @return the state id
@@ -131,7 +131,7 @@ namespace tud {
                     inline abs_type xtoi(const vector<double> & state) const {
                         return m_p_ss_set->xtoi(state);
                     }
-                    
+
                     /**
                      * Allows to get the state id in the grid
                      * @param dof_ids the dof state ids
@@ -160,7 +160,19 @@ namespace tud {
                     inline void xtois(const vector<double> & state, vector<abs_type> & state_ids) const {
                         m_p_ss_set->xtois(state, state_ids);
                     }
-                    
+
+                    /**
+                     * Allows to convert the abstract state given by its component ids into the BDD
+                     * @param state the abstract state component ids
+                     * @return the corresponding BDD
+                     */
+                    inline BDD x_to_bdd(const abs_type * state) {
+                        //For now just do it simple, and not efficient, in two steps
+                        abs_type state_id = 0;
+                        m_p_ss_set->istoi(state, state_id);
+                        return m_p_ss_set->id_to_bdd(state_id);
+                    }
+
                     /**
                      * Returns the BDD representing the given state id on the grid.
                      * The BDD uses the same variables and thus order thereof as used
@@ -171,7 +183,7 @@ namespace tud {
                     inline BDD id_to_bdd(abs_type state_id) const {
                         return m_p_ss_set->id_to_bdd(state_id);
                     }
-                    
+
                     /**
                      * Allows to get the state-space points, for which there are input signals
                      * @return the vector is of size (number of grid points) x n where n is the
@@ -182,7 +194,7 @@ namespace tud {
                     inline vector<double> get_points() const {
                         return m_p_ss_set->bdd_to_grid_points(m_cudd_mgr, m_ss_bdd);
                     }
-                    
+
                     /**
                      * Allows to get the number of states with input signals
                      * @return the number of states with input signals.
@@ -190,7 +202,7 @@ namespace tud {
                     inline abs_type get_size() const {
                         return m_p_ss_set->get_size(m_cudd_mgr, m_ss_bdd);
                     }
-                    
+
                     /**
                      * Allows to get the symbolic set representing the state space of
                      * the controller. This set uses the same BDD variables as the
@@ -200,7 +212,7 @@ namespace tud {
                     inline const SymbolicSet& get_states_set() const {
                         return *m_p_ss_set;
                     }
-                    
+
                     /**
                      * Allows to get the CUDD menager corresponding to this states manager
                      * @return the cudd manager
@@ -218,7 +230,7 @@ namespace tud {
                     //Stores the reference to the CUDD manager
                     const Cudd & m_cudd_mgr;
                 };
-                
+
             }
         }
     }

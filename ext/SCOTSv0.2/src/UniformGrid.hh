@@ -75,9 +75,7 @@ protected:
   /** @brief scots::abs_type array[m_dim] containing the number of grid points in each dimension **/
   std::unique_ptr<abs_type[]> m_no_grid_points;        
   /** @brief array recursively defined by: m_NN[0]=1; m_NN[i]=m_NN[i-1}*no_grid_points[i-1]; **/
-  std::unique_ptr<abs_type[]> m_NN;                       
-  /** @brief stores the flag indicating whether this is an extended grid bdd**/
-  bool m_is_ext_grid;
+  std::unique_ptr<abs_type[]> m_NN;
 
 public:
   /* @cond  EXCLUDE from doxygen */
@@ -86,8 +84,7 @@ public:
                   m_eta(nullptr), 
                   m_first(nullptr),
                   m_no_grid_points(nullptr),
-                  m_NN(nullptr),
-                  m_is_ext_grid(false) { }
+                  m_NN(nullptr) { }
   /* destructor */
   virtual
   ~UniformGrid() = default;
@@ -104,7 +101,6 @@ public:
     if(this==&other)
       return *this;
     m_dim=other.m_dim;
-    m_is_ext_grid = other.m_is_ext_grid;
     if(m_dim != 0) {
       m_eta.reset(new double[m_dim]);
       m_first.reset(new double[m_dim]);
@@ -122,7 +118,6 @@ public:
   /* create UniformGrid from other by projection on the dimension specified in dim */
   UniformGrid(const UniformGrid &other, const std::vector<int>& dim) : UniformGrid() {
     m_dim=dim.size();
-    m_is_ext_grid = other.m_is_ext_grid;
     if(m_dim != 0) {
       m_eta.reset(new double[m_dim]);
       m_first.reset(new double[m_dim]);
@@ -139,7 +134,6 @@ public:
   /* move assignment operator */
   UniformGrid& operator=(UniformGrid&& other) {
     m_dim=std::move(other.m_dim);
-    m_is_ext_grid = other.m_is_ext_grid;
     m_eta=std::move(other.m_eta);
     m_first=std::move(other.m_first);
     m_no_grid_points=std::move(other.m_no_grid_points);
@@ -167,7 +161,6 @@ public:
               const bool is_ext_grid = false)
         : UniformGrid() {
     m_dim = dim;
-    m_is_ext_grid = is_ext_grid;
     if(m_dim != 0) {
       /* check inut arguments */
       for(int index=0; index<dim; index++) {
@@ -366,9 +359,6 @@ public:
 
   /** @name get functions **/
   //@{
-  bool is_ext_grid() const {
-    return m_is_ext_grid;
-  }
   int get_dim() const {
     return m_dim;
   }

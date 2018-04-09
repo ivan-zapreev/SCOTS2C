@@ -93,7 +93,7 @@ static void extract_domain(const split_tool_params & params, input_ctrl_data & m
     //2. Reorder variables
     main_ctrl.reorder_variables();
     //3. Store the controller
-    const string res_file_name = params.m_target_file + string("_dom");
+    const string res_file_name = params.m_target_file + string(".dom");
     main_ctrl.store_controller_bdd(res_file_name);
     LOG_RESULT << "String the controller: " << res_file_name << END_LOG;
     

@@ -94,8 +94,7 @@ namespace tud {
                         
                         //Instantiate a grid for the input space
                         UniformGrid is_grid(is_dim, is_lleft,
-                                            is_uright, is_etas,
-                                            ctrl_set.is_ext_grid());
+                                            is_uright, is_etas);
                         
                         //Instantiate a new symbolic set for the input space
                         //using the intervals of the original controller,
