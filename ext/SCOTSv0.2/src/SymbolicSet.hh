@@ -230,7 +230,7 @@ public:
    *  The grid points are stacked on top of each other, i.e., the first n
    *  entries of the return vector represent the first grid point.
    **/
-  double * bdd_to_grid_point_ids(const Cudd& manager, BDD bdd, abs_type & no_gp) const {
+  abs_type * bdd_to_grid_point_ids(const Cudd& manager, BDD bdd, abs_type & no_gp) const {
     if((!get_no_bdd_vars()) || bdd==manager.bddZero())
       return {};
     /* disable reordering (if enabled) */
@@ -255,7 +255,7 @@ public:
       bdd = bdd & interval.get_all_elements();
     /* init the vector of grid points to be returned */
     no_gp = get_size(manager,bdd);
-    double* gp = new double[no_gp*m_dim];
+    abs_type* gp = new abs_type[no_gp*m_dim];
     for(abs_type i=0; i<no_gp; i++) {
       for(int j=0; j<m_dim; j++)
         gp[i*m_dim+j]=0;

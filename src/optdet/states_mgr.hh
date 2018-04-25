@@ -117,10 +117,18 @@ namespace tud {
                     }
 
                     /**
+                     * Allows to get the number of grid points per dimension
+                     * @return the number of grid points per dimension
+                     */
+                    inline std::vector<abs_type> get_no_gp_per_dim() const {
+                        return m_p_ss_set->get_no_gp_per_dim();
+                    }
+
+                    /**
                      * Allows to get the number of dimensions in the state space
                      * @return the number of state-space dimensions
                      */
-                    int get_dim() const {
+                    inline int get_dim() const {
                         return m_p_ss_set->get_dim();
                     }
 
@@ -166,7 +174,7 @@ namespace tud {
                      * @param state the abstract state component ids
                      * @return the corresponding BDD
                      */
-                    inline BDD x_to_bdd(const abs_type * state) {
+                    inline BDD x_to_bdd(const abs_type * state) const {
                         //For now just do it simple, and not efficient, in two steps
                         abs_type state_id = 0;
                         m_p_ss_set->istoi(state, state_id);
