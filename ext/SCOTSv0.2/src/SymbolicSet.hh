@@ -59,7 +59,7 @@ public:
     /**Check that the intervals correspond to the grid type**/
     for(int i=0; i<m_dim; i++) {
       if(m_bdd_interval[i].get_ub() != (m_no_grid_points[i] - 1 )){
-        std::cout << "\nscots::SymbolicSet: m_bdd_interval["<<i<<"].get_ub() = "
+        std::cout << std::endl << "scots::SymbolicSet: m_bdd_interval["<<i<<"].get_ub() = "
                   << m_bdd_interval[i].get_ub() << " != (m_no_grid_points["<<i<<"] - 1 ) = "
                   << (m_no_grid_points[i] - 1 ) << std::endl;
         throw std::runtime_error("\nscots::SymbolicSet: The grid does not match the BDD intervals!");
@@ -182,6 +182,14 @@ public:
     std::cout << "\n";
   }
 
+  inline BDD i_to_bdd(const std::vector<double>& astate) const {
+    BDD bdd = m_bdd_interval[0].int_to_bdd(std::round(astate[0]));
+    for(int k=1; k < m_dim; ++k) {
+      bdd = bdd & m_bdd_interval[k].int_to_bdd(std::round(astate[k]));
+    }
+    return bdd;
+  }
+                     
   /** @brief function to obtain a BDD representation of the grid point id **/
   BDD id_to_bdd(abs_type id) const {
     abs_type num;
@@ -307,9 +315,10 @@ public:
    *  The grid points are stacked on top of each other, i.e., the first n
    *  entries of the return vector represent the first grid point.
    **/
-  std::vector<double> bdd_to_grid_points(const Cudd& manager, BDD bdd) const {
+  void bdd_to_grid_points(const Cudd& manager, BDD bdd, std::vector<double> & gp) const {
+    gp.clear();
     if((!get_no_bdd_vars()) || bdd==manager.bddZero())
-      return {};
+      return;
     /* disable reordering (if enabled) */
     const bool is_reordering = manager.ReorderingStatus(nullptr);
     if(is_reordering){
@@ -332,10 +341,12 @@ public:
       bdd = bdd & interval.get_all_elements();
     /* init the vector of grid points to be returned */
     abs_type no_gp = get_size(manager,bdd);
-    std::vector<double> gp(no_gp*m_dim);
+    //std::vector<double> gp(no_gp*m_dim);
+    gp.resize(no_gp*m_dim);
     for(abs_type i=0; i<no_gp; i++) {
-      for(int j=0; j<m_dim; j++)
-        gp[i*m_dim+j]=m_first[j];
+      for(int j=0; j<m_dim; j++) {
+          gp[i*m_dim+j]=m_first[j];
+      }
     }
     /* set up iteration to iterate over BDD cubes */
     DdManager* dd = manager.getManager();
@@ -375,7 +386,13 @@ public:
     if(is_reordering){
       manager.AutodynEnable(Cudd_ReorderingType::CUDD_REORDER_SAME);
     }
-    return gp;
+    //return gp;
+  }
+  
+  inline std::vector<double> bdd_to_grid_points(const Cudd& manager, BDD bdd) const {
+      std::vector<double> result;
+      bdd_to_grid_points(manager, bdd, result);
+      return result;
   }
 
   /** @brief projection of the set of grid points onto the dimension in dim+1,
@@ -419,9 +436,10 @@ public:
    * @result          vector of grid points  \f$ S(x) \f$ 
    **/
   template<class grid_point_t>
-  std::vector<double> restriction(const Cudd& manager,
+  void restriction(const Cudd& manager,
                                   const BDD& bdd, 
-                                  const grid_point_t& x,  
+                                  const grid_point_t& x,
+                                  std::vector<double> & result, 
                                   std::vector<int> domain = {}) const {
     /* compute indices in domain/codomain */
     std::vector<int> codomain {};
@@ -445,8 +463,18 @@ public:
     BDD restricted = bdd & set_dom.id_to_bdd(id);
     restricted = restricted.ExistAbstract(set_dom.get_cube(manager));
     /* map restricted BDD to grid points */
-    return set_codom.bdd_to_grid_points(manager,restricted);
+    set_codom.bdd_to_grid_points(manager, restricted, result);
   }
+
+template<class grid_point_t>
+  std::vector<double> restriction(const Cudd& manager,
+                                  const BDD& bdd, 
+                                  const grid_point_t& x,  
+                                  std::vector<int> domain = {}) const {
+    std::vector<double> result;
+    restriction(manager, bdd, x, result, domain);
+    return result;
+}  
 
   /** @brief get number of BDD variables used to represent the SymbolicSet **/
   abs_type get_no_bdd_vars() const {

@@ -178,7 +178,8 @@ namespace tud {
                      * @param input the real-space input id
                      * @param ids the abstract-space input id
                      */
-                    inline void xtois(const vector<double> & input, vector<abs_type> & ids) const {
+                    template<typename abs_data>
+                    inline void xtois(const vector<double> & input, abs_data & ids) const {
                         m_p_is_set->xtois(input, ids);
                     }
                     
@@ -197,6 +198,15 @@ namespace tud {
                         } else {
                             return it->second;
                         }
+                    }
+                    
+                    /**
+                     * Converts an abstract state vector (stored as a vector of doubles) into its BDD
+                     * @param astate n abstract state vector (stored as a vector of doubles)
+                     * @return the BDD
+                     */
+                    inline BDD i_to_bdd(const vector<double> & astate) const {
+                        return m_p_is_set->i_to_bdd(astate);
                     }
                     
                     /**

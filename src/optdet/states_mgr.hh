@@ -161,11 +161,30 @@ namespace tud {
                     }
 
                     /**
+                     * Allows to convert the abstract state id into its continuous space state
+                     * @param id the abstract state id
+                     * @param state the continuous space state to be filled in
+                     */
+                    inline void itox(const abs_type id, vector<double> & state) const {
+                        m_p_ss_set->itox(id, state);
+                    }
+                    
+                    /**
+                     * Allows to get the state from the abstract vector state
+                     * @param dof_ids the dof state ids
+                     * @param state the state to be computed
+                     */
+                    inline void Itox(const abs_type * dof_ids, vector<double> & state) const {
+                        return m_p_ss_set->Itox(dof_ids, state);
+                    }
+                    
+                    /**
                      * Allows to get the state ids in the grid
                      * @param the real-space state id
                      * @param the abstract-space state id
                      */
-                    inline void xtois(const vector<double> & state, vector<abs_type> & state_ids) const {
+                    template<typename abs_data>
+                    inline void xtois(const vector<double> & state, abs_data & state_ids) const {
                         m_p_ss_set->xtois(state, state_ids);
                     }
 
@@ -180,6 +199,15 @@ namespace tud {
                         m_p_ss_set->istoi(state, state_id);
                         return m_p_ss_set->id_to_bdd(state_id);
                     }
+                    
+                    /**
+                     * Converts an abstract state vector (stored as a vector of doubles) into its BDD
+                     * @param astate n abstract state vector (stored as a vector of doubles)
+                     * @return the BDD
+                     */
+                    inline BDD i_to_bdd(const vector<double> & astate) const {
+                        return m_p_ss_set->i_to_bdd(astate);
+                    }
 
                     /**
                      * Returns the BDD representing the given state id on the grid.
@@ -190,6 +218,17 @@ namespace tud {
                      */
                     inline BDD id_to_bdd(abs_type state_id) const {
                         return m_p_ss_set->id_to_bdd(state_id);
+                    }
+
+                    /**
+                     * Allows to get the state-space points, for which there are input signals
+                     * @param result the vector is of size (number of grid points) x n where n is the
+                     *          state-space dimension. The grid points are stacked on top of each
+                     *          other, i.e., the first n entries of the return vector represent
+                     *          the first grid point.
+                     */
+                    inline void get_points(vector<double> & result) const {
+                        return m_p_ss_set->bdd_to_grid_points(m_cudd_mgr, m_ss_bdd, result);
                     }
 
                     /**
