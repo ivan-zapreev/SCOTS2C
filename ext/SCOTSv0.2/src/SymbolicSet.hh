@@ -181,11 +181,25 @@ public:
     }
     std::cout << "\n";
   }
+  
+  /** @brief safely converts an approximate abstract state id into a bdd **/
+  inline bool i_to_bdd(const std::vector<double>& astate, BDD & bdd){
+    for(int k=0; k < m_dim; ++k) {
+        const abs_type abs_id = std::round(abs(astate[k]));
+        if(abs_id < m_no_grid_points[k] ) {
+            bdd = bdd & m_bdd_interval[k].int_to_bdd(abs_id);
+        } else {
+            return false;
+        }
+    }
+    return true;
+  }
 
+  /** @brief converts an approximate abstract state id into a bdd **/
   inline BDD i_to_bdd(const std::vector<double>& astate) const {
-    BDD bdd = m_bdd_interval[0].int_to_bdd(std::round(astate[0]));
+    BDD bdd = m_bdd_interval[0].int_to_bdd(std::round(abs(astate[0])));
     for(int k=1; k < m_dim; ++k) {
-      bdd = bdd & m_bdd_interval[k].int_to_bdd(std::round(astate[k]));
+      bdd = bdd & m_bdd_interval[k].int_to_bdd(std::round(abs(astate[k])));
     }
     return bdd;
   }
@@ -224,7 +238,7 @@ public:
    **/
   template<class F>
   BDD ap_to_bdd(const Cudd& manager, const F& atomic_prop) const {
-    BDD result = manager.bddZero();; 
+    BDD result = manager.bddZero();
     for(abs_type i=0; i<size(); i++) {
       if(atomic_prop(i)) 
         result = result | id_to_bdd(i);
@@ -511,10 +525,10 @@ template<class grid_point_t>
     if((!get_no_bdd_vars()) || bdd==manager.bddZero())
       return {};
     /* disable reordering (if enabled) */
-            const bool is_reordering = manager.ReorderingStatus(nullptr);
-            if(is_reordering){
+    const bool is_reordering = manager.ReorderingStatus(nullptr);
+    if(is_reordering){
       manager.AutodynDisable();
-            }
+    }
     /* get variable ids */
     auto var_id = get_bdd_var_ids();
     /* find the variables in the support of the BDD but outside the SymbolicSet */
@@ -570,9 +584,9 @@ template<class grid_point_t>
     }
 
     /* reactivate reordering if it was enabled */
-            if(is_reordering){
-                manager.AutodynEnable(Cudd_ReorderingType::CUDD_REORDER_SAME);
-            }
+    if(is_reordering){
+      manager.AutodynEnable(Cudd_ReorderingType::CUDD_REORDER_SAME);
+    }
     return IDs;
   }
 
