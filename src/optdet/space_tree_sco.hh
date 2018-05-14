@@ -135,7 +135,7 @@ namespace tud {
                         memcpy(dof_masks, m_dof_masks, m_dof_masks_len);
                         
                         //Get to the leaf node defined by the state ids
-                        space_tree::add_leaf_node(input_ids, [&](const size_t depth)->bool {
+                        space_tree::add_leaf_node(input_ids, [&state_ids, &dof_masks](const size_t depth)->bool {
                             //Get the dof at the given depth
                             size_t dof = space_node::m_depth_to_dof()[depth];
                             
@@ -160,6 +160,7 @@ namespace tud {
                         
                         //Delete the dof masks array
                         delete[] m_dof_masks;
+
                         
                         //Free the depths array
                         delete[] space_node::m_depth_to_dof();
