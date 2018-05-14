@@ -18,21 +18,40 @@ This project consists of several SCOTSv2.0 BDD controllers related software comp
 
 The former can be used in order to work with SCOTSv2.0 BDD controllers from Mathematica. The latter can be used to: *(i)* determinize BDD controllers, in order to reduce their size; *(ii)* visualize the BDD controller as a 2D image; *(iii)* split the controller into parts corresponding to different control input values.
 
-#Installation
+#Third party software
+Our software makes use of several open-source libraries that, for your convenience, are pre-packed under the project's `./ext/` folder.
 
-All of the software components require:
+**NOTE:** *The third party software is not guaranteed to be identical to the same versions provided on the official web sites. It has been modified for correctness and extended with new functionality.*
+
+Most of the used third-party software is C++ header only libraries that do not require building or installation:
+
+1. SCOTSv2.0 (<https://gitlab.lrz.de/matthias/SCOTSv0.2>) - the tool for generating symbolic controllers
+2. svgDrawer (<https://github.com/openMVG-thirdparty/vectorGraphics>) - an easy SVG image C++ writer
+3. TCLAP (<http://tclap.sourceforge.net/>) - a small, flexible library for defining and accessing command line arguments
+
+There is yet one library which does require building and installation:
+
+* CUDDv3.0.0 (<http://vlsi.colorado.edu/~fabio/>) - the Binary Decision Diagrams (BDD) management library
+
+The instructions on building and installing the latter one (on two supported platforms) are given in the next section.
+
+#Preparing for building
+
+Before the software provided in this repository can build, make sure that you have the following standard tools installed:
 
 1. GCC(<https://gcc.gnu.org/>) - the GNU compiler collection
 2. CMAKE(<https://cmake.org/>) - the cross platform software building tool
-3. Automake 1.14.1 (<http://ftp.gnu.org/gnu/automake/>) - the cross platform software building tool
-4. SCOTSv2.0 (<https://gitlab.lrz.de/matthias/SCOTSv0.2>) - the tool for generating symbolic controllers
-5. CUDDv3.0.0 (<http://vlsi.colorado.edu/~fabio/>) - the BDD management library
+3. Automake 1.14 (<http://ftp.gnu.org/gnu/automake/>) - the cross platform software building tool.
 
-SCOTSv2.0 and CUDDv3.0.0 are pre-packaged in the `./ext` folder of the project. SCOTSv2.0 is a header-only C++ library so it does not require building or installation. CUDD is to be build and installed. It requires the UUID package, to be more precise the development version thereof, on Ubuntu known as "uuid-dev". This library can be installed for instance by running "sudo apt-get install uuid-dev". Below we list two instruction sets for building and installing CUDD on two platforms:
+**NOTE:** If another automake version is used you will be getting a
+
+```WARNING: 'aclocal-1.14' is missing on your system.```
+
+message, preventing you to build CUDD. The rest of the section is devoted to building CUDD on Max OS X and Ubuntu platforms.
 
 ##Max OS X
 
-  -  On MAC OS X we use the following sequence:
+-  Perform the following building/installation sequence:
 
 ```
 export CUDDPATH=/opt/local/
@@ -45,7 +64,11 @@ sudo make install
 
 ##Ubuntu
 
-  -  On Ubuntu we use the following sequence:
+- Make sure that the development version of the UUID package "uuid-dev" is installed:
+
+```sudo apt-get install uuid-dev```
+
+-  Perform the following building/installation sequence:
 
 ```
 export CUDDPATH=/usr/local
@@ -56,21 +79,23 @@ make
 sudo make install
 ```
 
-  -  Make sure that the `./ext/cudd-3.0.0/util/util.h` and `./ext/cudd-3.0.0/config.h` have been copied into `${CUDDPATH}/include` by running
+-  Make sure that the `./ext/cudd-3.0.0/util/util.h` and `./ext/cudd-3.0.0/config.h` have been copied into `${CUDDPATH}/include` by running
 
 ```
 find ${CUDDPATH}/include -name "util.h"
 find ${CUDDPATH}/include -name "config.h"
 ```
 
-  -  If one of the header files was not copied then use an appropriate command
+-  If one of the header files was not copied then use an appropriate command
 	
 ```
 sudo cp ./ext/cudd-3.0.0/util/util.h ${CUDDPATH}/include
 sudo cp ./ext/cudd-3.0.0/config.h ${CUDDPATH}/include
 ```
 
-For building WSTP and LibraryLink interfaces on required Wolfram Mathematica (<https://www.wolfram.com/mathematica/>) to be installed. Note that, our building scripts use `FindMathematica` CMake package (<https://github.com/sakra/FindMathematica/>) for finding the Mathematica distribution. The latter assumes that Mathematica is expected to be installed into a standard location. For more details see the package's manual <https://github.com/sakra/FindMathematica/blob/master/MANUAL.md>
+### What you need to build WSTP and LibrayLink interfaces:
+
+For building *WSTP* and *LibraryLink* interfaces on required Wolfram Mathematica (<https://www.wolfram.com/mathematica/>) to be installed. Note that, our building scripts use `FindMathematica` CMake package (<https://github.com/sakra/FindMathematica/>) for finding the Mathematica distribution. The latter assumes that Mathematica is expected to be installed into a standard location. For more details see the package's manual <https://github.com/sakra/FindMathematica/blob/master/MANUAL.md>
 
 #Building the software
 
@@ -83,7 +108,7 @@ cmake ..
 make
 ```
 
-Note that, if source code of the software has been changed then one is required to re-run:
+Note that, if source code of the software has been changed (new source have been added) then one is required to re-run:
 
 ```
 cmake ..
@@ -147,7 +172,7 @@ SCOTSv2`LoadBDDController[]
 ```
 Global`LoadSCOTSv2BDD["<PATH_TO_CONTROLLER>/controller"]
 ```
-   Note that the `.scs` file extension is ommited.
+   Note that the `.scs` file extension is Omitted[D[D[D[D[D[o.
 
    At the moment only the BDD controllers are supported. See the pre-generated example controllers from SCOTSv2.0 located in:
 ```
