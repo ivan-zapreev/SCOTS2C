@@ -117,6 +117,209 @@ make
 
 The Mathematica interface software comes in two versions: one version is WSTP based and the other uses LibraryLink. They are mostly identical in functionality with the exception of LibraryLink version being able to retrieve the set of all grid points at once. Further we shall first describe how the WSTP version is to be installed and used and then the same will be done for the LibraryLink version. The former is ran as a separate process and thus has not impact on the Mathematica Kernel, and benefits from all of the WSTP features. Yet the WSTP version is slower than the LibraryLink version which is however run inside the Mathematica Kernel and thus, in case of failures, may cause an interference.
 
+#Using the command line utilities
+The build command line utilities will be located inside the `./build/src/optdet/` folder. Each of them has a list of command line parameters and options that can be seen if the executable is run on the command line.
+
+## `./scots_opt_det`
+This software can be used to determinize BDD controllers provided by SCOTSv2.0 using a number of different deterministic algorithms as described and analyzed in **`[ZVM_ADHS_2018]`** and **`[ZVM_ArXiV_2018]`**.
+
+```
+$ ./scots_opt_det --help
+USAGE:  ------------------------------------------------------------------ 
+USAGE: |                  BDD Determinizer for SCOTSv2.0        :)\___/(: |
+USAGE: |                       Software version 1.0             {(@)v(@)} |
+USAGE: |                        DCSC, TU Delft, NL              {|~- -~|} |
+USAGE: |            Copyright (C) Dr. Ivan S Zapreev, 2017-2018 {/^'^'^\} |
+USAGE: |  ═════════════════════════════════════════════════════════m-m══  |
+USAGE: |        This software is distributed under GPL 2.0 license        |
+USAGE: |          (GPL stands for GNU General Public License)             |
+USAGE: |          The product comes with ABSOLUTELY NO WARRANTY.          |
+USAGE: |   This is a free software, you are welcome to redistribute it.   |
+USAGE: |                     Running in 64 bit mode!                      |
+USAGE: |                 Build on: May 14 2018 11:39:30                   |
+USAGE:  ------------------------------------------------------------------ 
+
+USAGE: 
+
+   ./scots_opt_det  [-l <error|warn|usage|result|info|info1|info2|info3>]
+                    -a <local|global|mixed|bdd-local|bdd-mixed> [-n] [-x]
+                    [-g] [-c] [-e] [-r] -d <state-space dimensionality> -t
+                    <target controller file name> -s <source controller
+                    file name> [--] [--version] [-h]
+Where: 
+
+   -l <error|warn|usage|result|info|info1|info2|info3>,  --logging <error
+      |warn|usage|result|info|info1|info2|info3>
+     The log level to be used
+
+   -a <local|global|mixed|bdd-local|bdd-mixed>,  --algorithm <local|global
+      |mixed|bdd-local|bdd-mixed>
+     (required)  Define the determinization algorithm
+
+   -n,  --bdd-angled
+     Compress using linear functions on the internal bdd state ids
+
+   -x,  --bdd-constant
+     Compress using constant functions on the internal bdd state ids
+
+   -g,  --angled
+     Compress using linear functions to optimize resulting BDD size
+
+   -c,  --constant
+     Compress using constant functions to optimize resulting BDD size
+
+   -e,  --extend
+     Extend to larger grid to optimize resulting BDD size
+
+   -r,  --reorder
+     Reorder variables to optimize resulting BDD size
+
+   -d <state-space dimensionality>,  --state-dimension <state-space
+      dimensionality>
+     (required)  The number of state space dimensions
+
+   -t <target controller file name>,  --target-controller <target
+      controller file name>
+     (required)  The SCOTSv2.0 BDD controller file name without (.scs/.bdd)
+
+   -s <source controller file name>,  --source-controller <source
+      controller file name>
+     (required)  The SCOTSv2.0 BDD controller file name without (.scs/.bdd)
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+```
+
+## `./scots_split_det`
+This software allows to do two things:
+
+1. Extract the domain states of a BDD controller into a separate BDD file
+2. Split the provided controller into a number of controllers, per input value.
+
+The former removes all the inputs from the original controller and only preserves the domain states. The latter generates a number of BDD sub-controllers each of which contains states having one specific input.
+
+```
+$ ./scots_split_det --help
+USAGE:  ------------------------------------------------------------------ 
+USAGE: |                    BDD Splitter for SCOTSv2.0          :)\___/(: |
+USAGE: |                       Software version 1.0             {(@)v(@)} |
+USAGE: |                        DCSC, TU Delft, NL              {|~- -~|} |
+USAGE: |            Copyright (C) Dr. Ivan S Zapreev, 2017-2018 {/^'^'^\} |
+USAGE: |  ═════════════════════════════════════════════════════════m-m══  |
+USAGE: |        This software is distributed under GPL 2.0 license        |
+USAGE: |          (GPL stands for GNU General Public License)             |
+USAGE: |          The product comes with ABSOLUTELY NO WARRANTY.          |
+USAGE: |   This is a free software, you are welcome to redistribute it.   |
+USAGE: |                     Running in 64 bit mode!                      |
+USAGE: |                 Build on: May 14 2018 11:39:30                   |
+USAGE:  ------------------------------------------------------------------ 
+
+USAGE: 
+
+   ./scots_split_det  [-l <error|warn|usage|result|info|info1|info2|info3>]
+                      [-p] [-i] -d <state-space dimensionality> -t <target
+                      controller file name> -s <source controller file
+                      name> [--] [--version] [-h]
+Where: 
+
+   -l <error|warn|usage|result|info|info1|info2|info3>,  --logging <error
+      |warn|usage|result|info|info1|info2|info3>
+     The log level to be used
+
+   -p,  --support
+     Request the reordered  controller support BDD
+
+   -i,  --input
+     Request the splitting the controller per input
+
+   -d <state-space dimensionality>,  --state-dimension <state-space
+      dimensionality>
+     (required)  The number of state space dimensions
+
+   -t <target controller file name>,  --target-controller <target
+      controller file name>
+     (required)  The SCOTSv2.0 BDD controller file name without (.scs/.bdd)
+
+   -s <source controller file name>,  --source-controller <source
+      controller file name>
+     (required)  The SCOTSv2.0 BDD controller file name without (.scs/.bdd)
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+```
+
+## `./scots_to_svg`
+This software allows to convert a BDD controller into a 2D SVG image. The horizontal axis thereof corresponds to the state index and the vertical axis to an input index. Note that, one can use regular SCOTSv2.0 or BDD-induced indexes. The plot is a discrete multi-valued function of the controller.
+
+```
+$ ./scots_to_svg --help
+USAGE:  ------------------------------------------------------------------ 
+USAGE: |               SCOTSv2.0 controller to SVG converter    :)\___/(: |
+USAGE: |                       Software version 1.0             {(@)v(@)} |
+USAGE: |                        DCSC, TU Delft, NL              {|~- -~|} |
+USAGE: |            Copyright (C) Dr. Ivan S Zapreev, 2017-2018 {/^'^'^\} |
+USAGE: |  ═════════════════════════════════════════════════════════m-m══  |
+USAGE: |        This software is distributed under GPL 2.0 license        |
+USAGE: |          (GPL stands for GNU General Public License)             |
+USAGE: |          The product comes with ABSOLUTELY NO WARRANTY.          |
+USAGE: |   This is a free software, you are welcome to redistribute it.   |
+USAGE: |                     Running in 64 bit mode!                      |
+USAGE: |                 Build on: May 14 2018 11:39:30                   |
+USAGE:  ------------------------------------------------------------------ 
+
+USAGE: 
+
+   ./scots_to_svg  [-l <error|warn|usage|result|info|info1|info2|info3>]
+                   [-b] -d <state-space dimensionality> -t <target
+                   controller file name> -s <source controller file name>
+                   [--] [--version] [-h]
+Where: 
+
+   -l <error|warn|usage|result|info|info1|info2|info3>,  --logging <error
+      |warn|usage|result|info|info1|info2|info3>
+     The log level to be used
+
+   -b,  --bdd
+     Request the bdd ids plotting instead of scots abstract ids
+
+   -d <state-space dimensionality>,  --state-dimension <state-space
+      dimensionality>
+     (required)  The number of state space dimensions
+
+   -t <target controller file name>,  --target-controller <target
+      controller file name>
+     (required)  The SCOTSv2.0 BDD controller file name without (.scs/.bdd)
+
+   -s <source controller file name>,  --source-controller <source
+      controller file name>
+     (required)  The SCOTSv2.0 BDD controller file name without (.scs/.bdd)
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+```
+
+## `./scots_opt_lis`
+
+**WARNING:** Is an experimental piece that at the moment does not work, please ignore!
+
 #Installing the WSTP software
 
 Install the `build/src/wstp/scots2ext` WSTP application through the Notebook in Mathematica.
@@ -172,7 +375,7 @@ SCOTSv2`LoadBDDController[]
 ```
 Global`LoadSCOTSv2BDD["<PATH_TO_CONTROLLER>/controller"]
 ```
-   Note that the `.scs` file extension is Omitted[D[D[D[D[D[o.
+   Note that the `.scs` file extension is omitted.
 
    At the moment only the BDD controllers are supported. See the pre-generated example controllers from SCOTSv2.0 located in:
 ```
@@ -219,3 +422,8 @@ In all cases to un-load a library function one needs to use `LibraryFunctionUnlo
 #Using the LibraryLink software
 
 The example usage of the LibraryLink software is given in the `./data/liblink_example.nb` Please make sure that the absolute paths to the generated shared library and the bdd controller are updated. The example is made and tested on Mac OS X and Linux.
+
+#Literature
+
+- **`[ZVM_ADHS_2018]`** - Ivan S. Zapreev, Cees Verdier, Manuel Mazo Jr. "Optimal Symbolic Controllers Determinization for BDD storage", IFAC Conference on Analysis and Design of Hybrid Systems (ADHS), July 2018
+- **`[ZVM_ArXiV_2018]`** - Ivan S. Zapreev, Cees Verdier, Manuel Mazo Jr. "Optimal Symbolic Controllers Determinization for BDD storage", arXiv, 2018, <https://arxiv.org/abs/1803.07369>

@@ -188,7 +188,7 @@ namespace tud {
 
                     //This argument will define the determinization scope and thus the actual algorithm
                     p_det_alg_vals = new ValuesConstraint<string>(det_tool_params::get_det_alg());
-                    p_det_alg = new ValueArg<string>("a", "algorithm", string("Define the determinization algorithmn"),
+                    p_det_alg = new ValueArg<string>("a", "algorithm", string("Define the determinization algorithm"),
                                                        true, "mixed", p_det_alg_vals, *p_cmd_args);
 
                     //Add the -d the debug level parameter - optional, default is e.g. RESULT

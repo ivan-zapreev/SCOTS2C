@@ -170,7 +170,7 @@ namespace tud {
                                                      true, 0, "state-space dimensionality", *p_cmd_args);
                     
                     //Request the per-input splitting, default is false
-                    p_is_bdd_ids = new SwitchArg("b", "bdd", string("Request the bdd ids ploting ") +
+                    p_is_bdd_ids = new SwitchArg("b", "bdd", string("Request the bdd ids plotting ") +
                                                string("instead of scots abstract ids"), *p_cmd_args, false);
                     
                     //Add the -d the debug level parameter - optional, default is e.g. RESULT
