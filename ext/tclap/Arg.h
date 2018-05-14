@@ -431,10 +431,11 @@ ExtractValue(T &destVal, const std::string& strVal, ValueLike vl)
 	valuesRead++;
     }
 
+#if __APPLE__
     if ( is.fail() )
 	throw( ArgParseException("Couldn't read argument value "
 				 "from string '" + strVal + "'"));
-
+#endif
 
     if ( valuesRead > 1 )
 	throw( ArgParseException("More than one valid value parsed from "
