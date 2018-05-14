@@ -9,8 +9,8 @@ include_directories(SYSTEM
                     ${EXT_PATH}/cudd-3.0.0/cudd
                     ${EXT_PATH}/cudd-3.0.0/cplusplus
                     ${EXT_PATH}/cudd-3.0.0/dddmp
-                    ${EXT_PATH}/SCOTSv0.2/src
-                    ${EXT_PATH}/SCOTSv0.2/utils
+                    ${EXT_PATH}/SCOTSv2.0/src
+                    ${EXT_PATH}/SCOTSv2.0/utils
                     ${EXT_PATH}/tclap
                     ${EXT_PATH}/svgDrawer)
 
