@@ -1,4 +1,4 @@
-#Introduction
+# Introduction
 
 This project consists of several SCOTSv2.0 BDD controllers related software components:
 
@@ -18,7 +18,7 @@ This project consists of several SCOTSv2.0 BDD controllers related software comp
 
 The former can be used in order to work with SCOTSv2.0 BDD controllers from Mathematica. The latter can be used to: *(i)* determinize BDD controllers, in order to reduce their size; *(ii)* visualize the BDD controller as a 2D image; *(iii)* split the controller into parts corresponding to different control input values.
 
-#Third party software
+# Third party software
 Our software makes use of several open-source libraries that, for your convenience, are pre-packed under the project's `./ext/` folder.
 
 **NOTE:** *The third party software is not guaranteed to be identical to the same versions provided on the official web sites. It has been modified for correctness and extended with new functionality.*
@@ -35,7 +35,7 @@ There is yet one library which does require building and installation:
 
 The instructions on building and installing the latter one (on two supported platforms) are given in the next section.
 
-#Preparing for building
+# Preparing for building
 
 Before the software provided in this repository can build, make sure that you have the following standard tools installed:
 
@@ -49,7 +49,7 @@ Before the software provided in this repository can build, make sure that you ha
 
 message, preventing you to build CUDD. The rest of the section is devoted to building CUDD on Max OS X and Ubuntu platforms.
 
-##Max OS X
+## Max OS X
 
 -  Perform the following building/installation sequence:
 
@@ -62,7 +62,7 @@ make
 sudo make install
 ```
 
-##Ubuntu
+## Ubuntu
 
 - Make sure that the development version of the UUID package "uuid-dev" is installed:
 
@@ -97,7 +97,7 @@ sudo cp ./ext/cudd-3.0.0/config.h ${CUDDPATH}/include
 
 For building *WSTP* and *LibraryLink* interfaces on required Wolfram Mathematica (<https://www.wolfram.com/mathematica/>) to be installed. Note that, our building scripts use `FindMathematica` CMake package (<https://github.com/sakra/FindMathematica/>) for finding the Mathematica distribution. The latter assumes that Mathematica is expected to be installed into a standard location. For more details see the package's manual <https://github.com/sakra/FindMathematica/blob/master/MANUAL.md>
 
-#Building the software
+# Building the software
 
 Build the SCOTSv2.0 to Mathematica interface package from the project root by
 
@@ -117,7 +117,7 @@ make
 
 The Mathematica interface software comes in two versions: one version is WSTP based and the other uses LibraryLink. They are mostly identical in functionality with the exception of LibraryLink version being able to retrieve the set of all grid points at once. Further we shall first describe how the WSTP version is to be installed and used and then the same will be done for the LibraryLink version. The former is ran as a separate process and thus has not impact on the Mathematica Kernel, and benefits from all of the WSTP features. Yet the WSTP version is slower than the LibraryLink version which is however run inside the Mathematica Kernel and thus, in case of failures, may cause an interference.
 
-#Using the command line utilities
+# Using the command line utilities
 The build command line utilities will be located inside the `./build/src/optdet/` folder. Each of them has a list of command line parameters and options that can be seen if the executable is run on the command line.
 
 ## `./scots_opt_det`
@@ -320,7 +320,7 @@ Where:
 
 **WARNING:** Is an experimental piece that at the moment does not work, please ignore!
 
-#Installing the WSTP software
+# Installing the WSTP software
 
 Install the `build/src/wstp/scots2ext` WSTP application through the Notebook in Mathematica.
 
@@ -365,7 +365,7 @@ File>Install...
     
 Choose the install name to be `scots2`.
 
-#Using the WSTP software
+# Using the WSTP software
 
 1. Load the SCOTSv2.0 controller (*.scs) by calling
 ```
@@ -419,11 +419,11 @@ Note that, the LoadCtrl (`load_controller_bdd`) function returns the number of `
 
 In all cases to un-load a library function one needs to use `LibraryFunctionUnload`. In order to unload the entire library one needs using `LibraryUnload`. However the latter does not always work, at least not on all platforms. Therefore, is a new version of the library is to be loaded one needs to re-start Mathematica first to let the previous version be unloaded.
 
-#Using the LibraryLink software
+# Using the LibraryLink software
 
 The example usage of the LibraryLink software is given in the `./data/liblink_example.nb` Please make sure that the absolute paths to the generated shared library and the bdd controller are updated. The example is made and tested on Mac OS X and Linux.
 
-#Literature
+# Literature
 
 - **`[ZVM_ADHS_2018]`** - Ivan S. Zapreev, Cees Verdier, Manuel Mazo Jr. "Optimal Symbolic Controllers Determinization for BDD storage", IFAC Conference on Analysis and Design of Hybrid Systems (ADHS), July 2018
 - **`[ZVM_ArXiV_2018]`** - Ivan S. Zapreev, Cees Verdier, Manuel Mazo Jr. "Optimal Symbolic Controllers Determinization for BDD storage", arXiv, 2018, <https://arxiv.org/abs/1803.07369>
