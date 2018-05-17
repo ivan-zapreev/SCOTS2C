@@ -1,24 +1,22 @@
 #
 # compiler
 #
-CC        = g++
-#CC       	  = clang++
-CXXFLAGS 		= -g -Wall -Wextra -std=c++11 -DSCOTS_BDD
-CXXFLAGS 		= -Wall -Wextra -std=c++11 -O3 -DNDEBUG -DSCOTS_BDD
+CC		= g++
+CXXFLAGS	= -Wall -Wextra -std=c++11 -O3 -DNDEBUG -DSCOTS_BDD
 #
-# scots 
+# scots
 #
-SCOTSROOT		= ../../../../ext/SCOTSv0.2
-SCOTSINC		= -I$(SCOTSROOT)/src  -I$(SCOTSROOT)/utils/
+SCOTSROOT	= ../../../../ext/SCOTSv2.0
+SCOTSINC	= -I$(SCOTSROOT)/src -I$(SCOTSROOT)/utils
 #
-# cudd 
+# cudd
 #
-CUDD		    =  -I/usr/local/include -L/usr/local/lib -lcudd
+CUDD		= -I/usr/local/include -L/usr/local/lib -lcudd
 #
-# optdet
+# OPTDET
 #
-OPTDETROOT              = ../../../../src/
-OPTDETINC               = -I$(OPTDETROOT)/optdet/
+OPTDETROOT      = ../../../../src/
+OPTDETINC       = -I$(OPTDETROOT)/optdet/
 
 .PHONY: dcm
 
@@ -26,8 +24,8 @@ TARGET = dcm
 
 all: $(TARGET)
 
-dcm: 
-	$(CC) dcm.cc -o dcm $(CXXFLAGS) $(SCOTSINC) $(CUDD) $(OPTDETINC)
+dcm:
+	$(CC) $(CXXFLAGS) $(SCOTSINC) $(OPTDETINC) dcm.cc -o dcm $(CUDD)
 
 clean:
-	rm -f dcm
+	rm dcm

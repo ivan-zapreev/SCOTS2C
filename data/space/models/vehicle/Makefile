@@ -1,23 +1,22 @@
 #
 # compiler
 #
-CC        = g++
-#CC       	  = clang++
-CXXFLAGS 		= -Wall -Wextra -std=c++11 -O3 -DNDEBUG -DSCOTS_BDD
+CC      	= g++
+CXXFLAGS 	= -Wall -Wextra -std=c++11 -O3 -DNDEBUG -DSCOTS_BDD
 #
-# scots 
+# scots
 #
-SCOTSROOT		= ../../../../ext/SCOTSv0.2
-SCOTSINC		= -I$(SCOTSROOT)/src -I$(SCOTSROOT)/utils
+SCOTSROOT	= ../../../../ext/SCOTSv2.0
+SCOTSINC	= -I$(SCOTSROOT)/src -I$(SCOTSROOT)/utils
 #
-# cudd 
+# cudd
 #
-CUDD		    =  -I/usr/local/include -L/usr/local/lib -lcudd
+CUDD		= -I/usr/local/include -L/usr/local/lib -lcudd
 #
-# optdet
+# OPTDET
 #
-OPTDETROOT              = ../../../../src/
-OPTDETINC               = -I$(OPTDETROOT)/optdet/
+OPTDETROOT      = ../../../../src/
+OPTDETINC       = -I$(OPTDETROOT)/optdet/
 
 .PHONY: vehicle
 
@@ -26,7 +25,7 @@ TARGET = vehicle
 all: $(TARGET)
 
 vehicle:
-	$(CC) vehicle.cc -o vehicle $(CXXFLAGS) $(SCOTSINC) $(CUDD) $(OPTDETINC)
+	$(CC) $(CXXFLAGS) $(SCOTSINC) $(OPTDETINC) vehicle.cc -o vehicle $(CUDD)
 
 clean:
-	rm -f vehicle
+	rm vehicle

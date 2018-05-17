@@ -4,12 +4,12 @@
 CC		= g++
 CXXFLAGS 	= -Wall -Wextra -std=c++11 -O3 -DNDEBUG -DSCOTS_BDD
 #
-# scots 
+# scots
 #
 SCOTSROOT	= ../../../../ext/SCOTSv2.0
 SCOTSINC	= -I$(SCOTSROOT)/src -I$(SCOTSROOT)/utils
 #
-# cudd 
+# cudd
 #
 CUDD    	=  -I/usr/local/include -L/usr/local/lib -lcudd
 
@@ -19,7 +19,7 @@ TARGET = aircraft
 
 all: $(TARGET)
 
-aircraft: 
+aircraft:
 	$(CC) $(CXXFLAGS) $(SCOTSINC) aircraft.cc -o aircraft $(CUDD)
 
 clean:
