@@ -7,11 +7,11 @@ CXXFLAGS 	= -Wall -Wextra -std=c++11 -O3 -DNDEBUG -DSCOTS_BDD
 # scots 
 #
 SCOTSROOT	= ../../../../ext/SCOTSv2.0
-SCOTSINC	= -I$(SCOTSROOT)/src -I$(SCOTSROOT)/utils/
+SCOTSINC	= -I$(SCOTSROOT)/src -I$(SCOTSROOT)/utils
 #
 # cudd 
 #
-CUDD            =  -I/opt/local/include -L/opt/local/lib -I/usr/local/include -L/usr/local/lib -lcudd
+CUDD            = -I/usr/local/include -L/usr/local/lib -lcudd
 
 .PHONY: dcdc_rec 
 

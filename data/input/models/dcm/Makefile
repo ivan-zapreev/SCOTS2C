@@ -11,7 +11,7 @@ SCOTSINC	= -I$(SCOTSROOT)/src -I$(SCOTSROOT)/utils
 #
 # cudd 
 #
-CUDD		=  -I/opt/local/include -L/opt/local/lib -I/usr/local/include -L/usr/local/lib -lcudd
+CUDD		= -I/usr/local/include -L/usr/local/lib -lcudd
 
 .PHONY: dcm
 
