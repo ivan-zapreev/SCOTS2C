@@ -126,7 +126,7 @@ The Mathematica interface software comes in two versions: one version is WSTP ba
 ## **Using the command line utilities**
 The build command line utilities will be located inside the `./build/src/optdet/` folder. Each of them has a list of command line parameters and options that can be seen if the executable is run on the command line.
 
-### `./scots_opt_det`
+### Running: `./scots_opt_det`
 This software can be used to determinize BDD controllers provided by SCOTSv2.0 using a number of different deterministic algorithms as described and analyzed in **`[ZVM_ADHS_2018]`** and **`[ZVM_ArXiV_2018]`**.
 
 ```
@@ -202,7 +202,7 @@ Where:
      Displays usage information and exits.
 ```
 
-### `./scots_split_det`
+### Running: `./scots_split_det`
 This software allows to do two things:
 
 1. Extract the domain states of a BDD controller into a separate BDD file
@@ -266,7 +266,7 @@ Where:
      Displays usage information and exits.
 ```
 
-### `./scots_to_svg`
+### Running: `./scots_to_svg`
 This software allows to convert a BDD controller into a 2D SVG image. The horizontal axis thereof corresponds to the state index and the vertical axis to an input index. Note that, one can use regular SCOTSv2.0 or BDD-induced indexes. The plot is a discrete multi-valued function of the controller.
 
 ```
@@ -322,7 +322,7 @@ Where:
      Displays usage information and exits.
 ```
 
-### `./scots_opt_lis`
+### Running: `./scots_opt_lis`
 
 **WARNING:** Is an experimental piece that at the moment does not work, please ignore!
 
@@ -428,6 +428,72 @@ In all cases to un-load a library function one needs to use `LibraryFunctionUnlo
 ## **Using the LibraryLink software**
 
 The example usage of the LibraryLink software is given in the `./data/liblink_example.nb` Please make sure that the absolute paths to the generated shared library and the bdd controller are updated. The example is made and tested on Mac OS X and Linux.
+
+## **Working with the example models**
+This project contains several example models derived from `SCOTSv2.0`, such as: `Aircraft`, `Vehicle`, `DCDC`, `DCDC rec`. In addition a DC motor example is added: `DCM`. These serve as a basis for example BDD models to be used with the provided software for demonstration purposes. All of the models are located inside two folders:
+
+* `./data/input` - stores the models parameterized by the input-space discretization coefficient parameter
+* `./data/space` - stores the models parameterized by the state-space discretization coefficient parameter
+
+Below we first list the scripting that can be used to build generate the corresponding models and to perform some batch operations on them. Further we provide some additional details on the example models and their parameters.
+
+### Working with `./data/input`
+This folder contains the following batch scripts that allow to:
+
+* `build.sh` -  build all the example binary files
+* `generate.sh` - generate the BDD controllers for a pre-defined range discretization coefficient parameter
+* `determinize.sh` - run the determinization procedure on the models using realized determinization algorithms
+* `domain.sh` - extract controller's domains of the original controllers
+* `split.sh` - split some of the controllers into sub-controller per input signal value
+* `pictures.sh` - produce svg images for some of the predefined controllers.
+
+Note that, all of the scripts are *"batch"* scripts that, inside themselves define the list of examples, models, and options they will apply to. These lists can be changed and modified by the user.
+
+### Working with `./data/space`
+This folder contains the following batch scripts that allow to:
+
+* `build.sh` -  build all the example binary files
+* `generate.sh` - generate the BDD controllers for a pre-defined range discretization coefficient parameter
+* `determinize.sh` - run the determinization procedure on the models using realized determinization algorithms
+
+The same as the scripts located in  `./data/input`, the scripts above are the *"batch"* ones. So the same rules apply.
+
+### SCOTSv2.0 example models
+
+Let us explain a few things about the example models. There is too many details to attend and therefore for brevity we shall only concentrate on the main points. The rest can be derived by exploring the folder structure and the provided scripts.
+
+Note that, the structure of the `./data/input/` and `./data/space/` folders, parameterized by `<disc_param>` from `{input, space}` is very similar. The SCOTSv2.0 models are always located in the `./data/<disc_param>/models` folder, e..g.[D[:
+
+```
+$ls /tmp/SCOTS2C/data/input/models/
+   aircraft	dcdc		dcdc_rec	dcm		vehicle
+$ls /tmp/SCOTS2C/data/space/models/
+   aircraft	dcdc		dcdc_rec	dcm		vehicle
+```
+
+Each of the examples has its own folder and by default consists of three files:
+
+* `*.cc` - the source file containing the example
+* `Makefile` - the makefile used to build the example
+* `readme` - the example's short description
+
+Once an example is build, using the `make` command from the example's folder or through the batch `./data/<disc_param>/build.sh` script, the produced example's executable has either one or two optional parameters, depending on the value of `<<disc_param>>`:
+
+1.  *"eta divider"* (for `<disc_param>` from `{input, space}`) - the integer value used to divide the input (for `<disc_param> = input`) or state (for `<disc_param> = space`) space's default discretization parameter values (uniformly in all dimensions).
+2.  *"unfit states"* (`<disc_param> = space`) - the optional unfit states file name (for the state-space set stored as a SymbolicSet BDD with `*.scs` and `*.bdd`). In case this parameter is provided, the first optional parameter (*"eta divider"*) becomes compulsory and must be specified (the value `1` can be used if the original discretization parameter is to be kept).
+
+Once the `generate.sh` is run, each example folder obtains sub-folders with the names being values of the *"eta divider"*. The exception is `dcdc_rec` example where two sub-folders names `1` and `2` are created for the two sub-controllers produced. The latter however, also get sub-folders for each of the used value of the *"eta divider"*.
+
+For each *"eta divider"* a SCOTS BDD controller model is generated and stored in the `scots` sub-folder, e.g.:
+
+```
+$ ls -al /tmp/SCOTS2C/data/input/models/aircraft/1/scots
+drwxr-xr-x  5 user  staff      160 Jan 31 16:32 .
+drwxr-xr-x  9 user  staff      288 Jan 31 16:32 ..
+-rw-r--r--  1 user  staff  2878481 Jan 31 16:32 c_reo.bdd
+-rw-r--r--  1 user  staff      615 Jan 31 16:32 c_reo.scs
+```
+Here `c_reo.bdd` and `c_reo.scs` is the SCOTS produced BDD controller for the original input space discretization parameter value, as we are have `<disc_param> = input` and from `aircraft/1/scots` *"eta divider"* is equal to `1`.
 
 ## **Literature**
 
